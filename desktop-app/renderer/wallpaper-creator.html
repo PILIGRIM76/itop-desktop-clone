@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="wallpaperCreator.title">Wallpaper Creator - iTop Easy Desktop</title>
+  <style>
+    :root {
+      --bg-primary: #1a1a2e;
+      --bg-secondary: #16213e;
+      --bg-tertiary: #0f3460;
+      --accent-purple: #8b5cf6;
+      --accent-pink: #ec4899;
+      --text-primary: #ffffff;
+      --text-secondary: #a0a0a0;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .creator-container {
+      display: grid;
+      grid-template-columns: 350px 1fr;
+      height: 100vh;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      background: var(--bg-secondary);
+      border-right: 1px solid var(--border-color);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      margin-bottom: 30px;
+    }
+
+    .sidebar-header h1 {
+      font-size: 24px;
+      font-weight: 700;
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-header p {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .section {
+      margin-bottom: 24px;
+    }
+
+    .section-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .section-title svg {
+      width: 18px;
+      height: 18px;
+      color: var(--accent-purple);
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+    }
+
+    .form-input, .form-select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 13px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .form-input:focus, .form-select:focus {
+      border-color: var(--accent-purple);
+    }
+
+    /* Toggle Switch */
+    .toggle-switch {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      background: var(--bg-tertiary);
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .toggle-label {
+      font-size: 13px;
+      color: var(--text-primary);
+    }
+
+    .switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      transition: 0.3s;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.3s;
+    }
+
+    input:checked + .slider {
+      background: var(--accent-purple);
+    }
+
+    input:checked + .slider:before {
+      transform: translateX(20px);
+    }
+
+    /* Slider Control */
+    .slider-control {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--bg-tertiary);
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .slider-control::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--accent-purple);
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .slider-control::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .slider-value {
+      font-size: 12px;
+      color: var(--text-secondary);
+      margin-top: 4px;
+      text-align: right;
+    }
+
+    /* Color Picker */
+    .color-picker {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .color-option {
+      width: 100%;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.active {
+      border-color: white;
+    }
+
+    /* Preview Area */
+    .preview-area {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .preview-header {
+      padding: 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .preview-actions {
+      display: flex;
+      gap: 12px;
+    }
+
+    .btn {
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+      border: 1px solid var(--border-color);
+    }
+
+    .btn-secondary:hover {
+      background: var(--bg-tertiary);
+      border-color: var(--accent-purple);
+    }
+
+    /* Preview Canvas */
+    .preview-canvas {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      overflow: hidden;
+    }
+
+    .preview-frame {
+      width: 100%;
+      max-width: 900px;
+      aspect-ratio: 16/9;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      border: 1px solid var(--border-color);
+      position: relative;
+    }
+
+    #previewContent {
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Wallpaper Type Tabs */
+    .type-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .type-tab {
+      flex: 1;
+      padding: 10px;
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      color: var(--text-secondary);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+
+    .type-tab:hover {
+      background: var(--bg-tertiary);
+      color: var(--text-primary);
+    }
+
+    .type-tab.active {
+      background: linear-gradient(135deg, var(--accent-purple), var(--accent-pink));
+      color: white;
+      border-color: transparent;
+    }
+
+    /* Loading */
+    .loading {
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      display: none;
+    }
+
+    .loading.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid var(--border-color);
+      border-top-color: var(--accent-purple);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    /* Notification */
+    .notification {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      padding: 16px 24px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      display: none;
+      animation: slideUp 0.3s ease;
+    }
+
+    .notification.show {
+      display: block;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="creator-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <h1 data-i18n="wallpaperCreator.title">🎨 Wallpaper Creator</h1>
+        <p data-i18n="wallpaperCreator.subtitle">Create custom wallpapers with effects</p>
+      </div>
+
+      <!-- Wallpaper Type -->
+      <div class="section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          <span data-i18n="wallpaperCreator.section.wallpaperType">Wallpaper Type</span>
+        </div>
+        <div class="type-tabs">
+          <div class="type-tab active" data-type="particles" data-i18n="wallpaperCreator.type.particles">Particles</div>
+          <div class="type-tab" data-type="gradient" data-i18n="wallpaperCreator.type.gradient">Gradient</div>
+          <div class="type-tab" data-type="solid" data-i18n="wallpaperCreator.type.solid">Solid</div>
+        </div>
+      </div>
+
+      <!-- Particle Effects -->
+      <div class="section" id="particleSection">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+          <span data-i18n="wallpaperCreator.section.particleEffects">Particle Effects</span>
+        </div>
+        
+        <div class="toggle-switch">
+          <span class="toggle-label" data-i18n="wallpaperCreator.enableParticles">Enable Particles</span>
+          <label class="switch">
+            <input type="checkbox" id="particlesEnabled" checked>
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.particleCount">Particle Count</label>
+          <input type="range" class="slider-control" id="particleCount" min="10" max="200" value="50">
+          <div class="slider-value" id="particleCountValue">50</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.particleSize">Particle Size</label>
+          <input type="range" class="slider-control" id="particleSize" min="1" max="20" value="5">
+          <div class="slider-value" id="particleSizeValue">5px</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.motionSpeed">Motion Speed</label>
+          <input type="range" class="slider-control" id="particleSpeed" min="1" max="10" value="5">
+          <div class="slider-value" id="particleSpeedValue">5</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.particleShape">Particle Shape</label>
+          <select class="form-select" id="particleShape">
+            <option value="circle" data-i18n="wallpaperCreator.shape.circle">Circle</option>
+            <option value="square" data-i18n="wallpaperCreator.shape.square">Square</option>
+            <option value="triangle" data-i18n="wallpaperCreator.shape.triangle">Triangle</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.motionType">Motion Type</label>
+          <select class="form-select" id="particleMotion">
+            <option value="float" data-i18n="wallpaperCreator.motion.float">Float</option>
+            <option value="rise" data-i18n="wallpaperCreator.motion.rise">Rise</option>
+            <option value="fall" data-i18n="wallpaperCreator.motion.fall">Fall</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 10 10"/>
+          </svg>
+          <span data-i18n="wallpaperCreator.section.colorFilters">Color Filters</span>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.brightness">Brightness</label>
+          <input type="range" class="slider-control" id="brightness" min="0" max="200" value="100">
+          <div class="slider-value" id="brightnessValue">100%</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.contrast">Contrast</label>
+          <input type="range" class="slider-control" id="contrast" min="0" max="200" value="100">
+          <div class="slider-value" id="contrastValue">100%</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.saturation">Saturation</label>
+          <input type="range" class="slider-control" id="saturation" min="0" max="200" value="100">
+          <div class="slider-value" id="saturationValue">100%</div>
+        </div>
+      </div>
+
+      <!-- Cursor Effects -->
+      <div class="section">
+        <div class="section-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+          </svg>
+          <span data-i18n="wallpaperCreator.section.cursorEffects">Cursor Effects</span>
+        </div>
+
+        <div class="toggle-switch">
+          <span class="toggle-label" data-i18n="wallpaperCreator.enableCursorTrail">Enable Cursor Trail</span>
+          <label class="switch">
+            <input type="checkbox" id="cursorTrail">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="wallpaperCreator.trailColor">Trail Color</label>
+          <div class="color-picker" id="cursorColorPicker">
+            <div class="color-option active" style="background: #8b5cf6;" data-color="#8b5cf6"></div>
+            <div class="color-option" style="background: #ec4899;" data-color="#ec4899"></div>
+            <div class="color-option" style="background: #3b82f6;" data-color="#3b82f6"></div>
+            <div class="color-option" style="background: #10b981;" data-color="#10b981"></div>
+            <div class="color-option" style="background: #f59e0b;" data-color="#f59e0b"></div>
+            <div class="color-option" style="background: #ffffff;" data-color="#ffffff"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview Area -->
+    <div class="preview-area">
+      <div class="preview-header">
+        <h2 data-i18n="wallpaperCreator.preview">Preview</h2>
+        <div class="preview-actions">
+          <button class="btn btn-secondary" onclick="resetSettings()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span data-i18n="wallpaperCreator.reset">Reset</span>
+          </button>
+          <button class="btn btn-primary" onclick="generateWallpaper()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span data-i18n="wallpaperCreator.generateSave">Generate & Save</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-canvas">
+        <div class="preview-frame">
+          <div id="previewContent"></div>
+          <div class="loading" id="loading">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="notification" id="notification"></div>
+
+  <script src="i18n.js"></script>
+  <script>
+    const savedLang = localStorage.getItem('iTopLanguage') || 'ru';
+    if (window.i18n && window.i18n.currentLang !== savedLang) {
+      window.i18n.currentLang = savedLang;
+      window.i18n.applyTranslations();
+    }
+
+    function tCreator(key, vars = {}, fallback) {
+      const raw = window.i18n ? window.i18n.t(key) : key;
+      const text = raw === key && fallback ? fallback : raw;
+      return text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+    }
+
+    document.title = tCreator('wallpaperCreator.title', {}, document.title);
+
+    // State
+    let currentType = 'particles';
+    let cursorColor = '#8b5cf6';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      initTypeTabs();
+      initSliders();
+      initColorPickers();
+      updatePreview();
+
+      // Auto-update preview on changes
+      document.querySelectorAll('input, select').forEach(el => {
+        el.addEventListener('change', updatePreview);
+        el.addEventListener('input', updatePreview);
+      });
+    });
+
+    // Type Tabs
+    function initTypeTabs() {
+      document.querySelectorAll('.type-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+          document.querySelectorAll('.type-tab').forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentType = tab.dataset.type;
+          
+          // Show/hide sections based on type
+          const particleSection = document.getElementById('particleSection');
+          particleSection.style.display = currentType === 'particles' ? 'block' : 'none';
+          
+          updatePreview();
+        });
+      });
+    }
+
+    // Sliders
+    function initSliders() {
+      const sliders = [
+        { id: 'particleCount', suffix: '' },
+        { id: 'particleSize', suffix: 'px' },
+        { id: 'particleSpeed', suffix: '' },
+        { id: 'brightness', suffix: '%' },
+        { id: 'contrast', suffix: '%' },
+        { id: 'saturation', suffix: '%' }
+      ];
+
+      sliders.forEach(slider => {
+        const el = document.getElementById(slider.id);
+        const valueEl = document.getElementById(slider.id + 'Value');
+        if (el && valueEl) {
+          el.addEventListener('input', () => {
+            valueEl.textContent = el.value + slider.suffix;
+          });
+        }
+      });
+    }
+
+    // Color Pickers
+    function initColorPickers() {
+      document.querySelectorAll('.color-option').forEach(option => {
+        option.addEventListener('click', () => {
+          const parent = option.parentElement;
+          parent.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+          option.classList.add('active');
+          cursorColor = option.dataset.color;
+          updatePreview();
+        });
+      });
+    }
+
+    // Get current settings
+    function getSettings() {
+      return {
+        type: currentType,
+        particleEffects: {
+          enabled: document.getElementById('particlesEnabled').checked,
+          count: parseInt(document.getElementById('particleCount').value),
+          size: { min: 1, max: parseInt(document.getElementById('particleSize').value) },
+          speed: { min: 0.5, max: parseInt(document.getElementById('particleSpeed').value) / 5 },
+          color: { r: 255, g: 255, b: 255, alpha: 0.5 },
+          shape: document.getElementById('particleShape').value,
+          motion: document.getElementById('particleMotion').value
+        },
+        filters: {
+          brightness: parseInt(document.getElementById('brightness').value),
+          contrast: parseInt(document.getElementById('contrast').value),
+          saturation: parseInt(document.getElementById('saturation').value),
+          hue: 0,
+          blur: 0,
+          grayscale: 0,
+          sepia: 0,
+          vignette: 0
+        },
+        cursorEffects: {
+          enabled: document.getElementById('cursorTrail').checked,
+          trail: document.getElementById('cursorTrail').checked,
+          glow: false,
+          ripple: false,
+          size: 20,
+          color: cursorColor
+        },
+        backgroundColor: '#1a1a2e',
+        gradientColors: ['#8b5cf6', '#ec4899'],
+        gradientType: 'linear',
+        gradientAngle: 135
+      };
+    }
+
+    // Update Preview
+    async function updatePreview() {
+      const settings = getSettings();
+      
+      if (window.electronAPI && window.electronAPI.previewWallpaper) {
+        const result = await window.electronAPI.previewWallpaper(settings);
+        if (result.success) {
+          document.getElementById('previewContent').innerHTML = result.html;
+        }
+      } else {
+        // Fallback: render directly
+        document.getElementById('previewContent').innerHTML = generatePreviewHTML(settings);
+      }
+    }
+
+    // Generate Preview HTML (fallback)
+    function generatePreviewHTML(settings) {
+      if (settings.type === 'particles') {
+        return `<div style="background: ${settings.backgroundColor}; width: 100%; height: 100%; position: relative; overflow: hidden;">
+          ${Array(settings.particleEffects.count).fill().map(() => {
+            const size = Math.random() * settings.particleEffects.size.max;
+            const x = Math.random() * 100;
+            const y = Math.random() * 100;
+            return `<div style="position: absolute; width: ${size}px; height: ${size}px; background: rgba(255,255,255,0.5); border-radius: 50%; left: ${x}%; top: ${y}%;"></div>`;
+          }).join('')}
+        </div>`;
+      } else if (settings.type === 'gradient') {
+        return `<div style="background: linear-gradient(${settings.gradientAngle}deg, ${settings.gradientColors.join(', ')}); width: 100%; height: 100%;"></div>`;
+      } else {
+        return `<div style="background: ${settings.backgroundColor}; width: 100%; height: 100%;"></div>`;
+      }
+    }
+
+    // Generate Wallpaper
+    async function generateWallpaper() {
+      const loading = document.getElementById('loading');
+      const notification = document.getElementById('notification');
+      
+      loading.classList.add('active');
+
+      try {
+        const settings = getSettings();
+        
+        let result;
+        if (window.electronAPI && window.electronAPI.generateWallpaper) {
+          result = await window.electronAPI.generateWallpaper(settings);
+        } else {
+          result = { success: false, error: tCreator('wallpaperCreator.notification.apiUnavailable') };
+        }
+
+        loading.classList.remove('active');
+
+        if (result.success) {
+          showNotification(`${tCreator('wallpaperCreator.notification.saved')}\n\n${result.path}`, 'success');
+        } else {
+          showNotification(`${tCreator('wallpaperCreator.notification.error')}${result.error}`, 'error');
+        }
+      } catch (error) {
+        loading.classList.remove('active');
+        showNotification(`${tCreator('wallpaperCreator.notification.error')}${error.message}`, 'error');
+      }
+    }
+
+    // Reset Settings
+    function resetSettings() {
+      document.getElementById('particlesEnabled').checked = true;
+      document.getElementById('particleCount').value = 50;
+      document.getElementById('particleSize').value = 5;
+      document.getElementById('particleSpeed').value = 5;
+      document.getElementById('particleShape').value = 'circle';
+      document.getElementById('particleMotion').value = 'float';
+      document.getElementById('brightness').value = 100;
+      document.getElementById('contrast').value = 100;
+      document.getElementById('saturation').value = 100;
+      document.getElementById('cursorTrail').checked = false;
+      
+      document.querySelectorAll('.slider-value').forEach(el => {
+        if (el.id.includes('brightness') || el.id.includes('contrast') || el.id.includes('saturation')) {
+          el.textContent = '100%';
+        } else if (el.id.includes('Size')) {
+          el.textContent = '5px';
+        } else {
+          el.textContent = el.id.replace('Value', '') === 'particleCount' ? '50' : '5';
+        }
+      });
+
+      updatePreview();
+      showNotification(tCreator('wallpaperCreator.notification.reset'), 'info');
+    }
+
+    // Show Notification
+    function showNotification(message, type = 'info') {
+      const notification = document.getElementById('notification');
+      notification.textContent = message;
+      notification.style.borderColor = type === 'success' ? '#10b981' : type === 'error' ? '#ef4444' : '#8b5cf6';
+      notification.classList.add('show');
+
+      setTimeout(() => {
+        notification.classList.remove('show');
+      }, 3000);
+    }
+  </script>
+</body>
+</html>

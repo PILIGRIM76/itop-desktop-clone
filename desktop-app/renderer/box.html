@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="boxWindow.title">Desktop Box</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: transparent; /* Прозрачный фон - цвет устанавливается через JS */
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      overflow: hidden;
+      height: 100vh;
+      user-select: none;
+    }
+
+    .box-container {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #8b5cf6DD, #8b5cf688); /* Цвет по умолчанию */
+    }
+
+    .box-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      cursor: move;
+      -webkit-app-region: drag;
+    }
+
+    .box-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .box-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .box-controls {
+      display: flex;
+      gap: 8px;
+      -webkit-app-region: no-drag;
+    }
+
+    .box-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .box-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .box-content {
+      flex: 1;
+      padding: 12px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .box-content.grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 8px;
+      align-content: start;
+    }
+
+    .box-content.grid .box-item {
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 6px;
+    }
+
+    .box-content.grid .item-name {
+      white-space: normal;
+      text-align: center;
+    }
+
+    .box-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .box-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .item-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(139, 92, 246, 0.3);
+    }
+
+    .item-name {
+      color: white;
+      font-size: 13px;
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+      gap: 12px;
+    }
+
+    /* Drag & Drop Styles */
+    .box-content.drag-over {
+      background: rgba(139, 92, 246, 0.2);
+      border: 2px dashed var(--box-color, #8b5cf6);
+    }
+
+    .drop-hint {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+      text-align: center;
+      color: var(--box-color, #8b5cf6);
+      gap: 16px;
+    }
+
+    .drop-hint.visible {
+      display: flex;
+    }
+
+    .drop-hint svg {
+      width: 64px;
+      height: 64px;
+      opacity: 0.6;
+    }
+
+    .drop-hint p {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .resize-handle {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 16px;
+      height: 16px;
+      cursor: se-resize;
+      background: linear-gradient(135deg, transparent 50%, rgba(255, 255, 255, 0.3) 50%);
+      border-bottom-right-radius: 12px;
+    }
+
+    /* Settings Panel */
+    .box-settings-panel {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      width: 280px;
+      background: rgba(37, 42, 61, 0.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 12px 48px rgba(0, 0, 0, 0.6);
+      z-index: 10000;
+      animation: settingsPanelSlideIn 0.2s ease;
+    }
+
+    @keyframes settingsPanelSlideIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .box-settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 12px;
+    }
+
+    .box-settings-header h4 {
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .box-settings-close {
+      width: 28px;
+      height: 28px;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .box-settings-close:hover {
+      background: rgba(239, 68, 68, 0.8);
+    }
+
+    .box-setting-item {
+      margin-bottom: 16px;
+    }
+
+    .box-setting-item label {
+      display: block;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .box-color-picker {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+    }
+
+    .box-color-option {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .box-color-option:hover { transform: scale(1.1); }
+    .box-color-option.active {
+      border-color: white;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    .box-transparency-slider input[type="range"] {
+      width: 100%;
+      height: 6px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .box-transparency-slider input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .box-transparency-slider input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #a78bfa;
+    }
+
+    /* Context Menu */
+    .context-menu {
+      position: fixed;
+      z-index: 10000;
+      min-width: 180px;
+      max-width: 220px;
+      background: rgba(37, 42, 61, 0.98);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: contextMenuFadeIn 0.15s ease;
+    }
+
+    @keyframes contextMenuFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 6px 10px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 12px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .context-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .context-menu-item.danger {
+      color: #ef4444;
+    }
+
+    .context-menu-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .context-menu-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 4px 0;
+    }
+
+    .context-menu-header {
+      padding: 6px 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 4px;
+    }
+
+    .context-menu-header h4 {
+      color: white;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .context-menu-header p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 10px;
+      margin: 2px 0 0 0;
+    }
+
+    /* Color Picker in Context Menu */
+    .color-picker-mini {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      padding: 6px 8px;
+    }
+
+    .color-option-mini {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .color-option-mini:hover {
+      transform: scale(1.15);
+    }
+
+    .color-option-mini.active {
+      border-color: white;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+    }
+
+    /* Transparency slider in context menu */
+    .context-menu-item input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .context-menu-item input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 14px;
+      height: 14px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .context-menu-item input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #a78bfa;
+    }
+
+    .color-option-mini.active {
+      border-color: white;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body>
+  <div class="box-container">
+    <div class="box-header">
+      <div class="box-title">
+        <div class="box-icon" id="boxIcon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+          </svg>
+        </div>
+        <span id="boxName">Box</span>
+      </div>
+      <div class="box-controls">
+        <button class="box-btn" id="settingsBtn" title="Settings" data-i18n-title="boxWindow.settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24 4.24l-4.24-4.24M6.34 6.34L2.1 2.1"/>
+          </svg>
+        </button>
+        <button class="box-btn" id="closeBtn" title="Close" data-i18n-title="boxWindow.close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Settings Panel -->
+    <div id="settingsPanel" class="box-settings-panel" style="display: none;">
+      <div class="box-settings-header">
+        <h4 data-i18n="boxWindow.settingsTitle">Box Settings</h4>
+        <button class="box-settings-close" onclick="toggleSettingsPanel()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="box-setting-item">
+        <label data-i18n="boxWindow.boxColor">Box Color</label>
+        <div class="box-color-picker" id="boxColorPicker">
+          <!-- Colors will be added by JavaScript -->
+        </div>
+      </div>
+      
+      <div class="box-setting-item">
+        <label><span data-i18n="boxWindow.transparency">Transparency</span>: <span class="setting-value" id="transparencyValue">90</span>%</label>
+        <div class="box-transparency-slider">
+          <input type="range" min="10" max="100" value="90" oninput="updateBoxTransparency(this.value)">
+        </div>
+      </div>
+      
+      <div class="box-setting-item">
+        <label data-i18n="boxWindow.icon">Icon</label>
+        <div class="box-color-picker" id="boxIconPicker">
+          <!-- Icons will be added by JavaScript -->
+        </div>
+      </div>
+      
+      <div class="box-setting-item">
+        <label data-i18n="boxWindow.name">Name</label>
+        <input type="text" id="boxNameInput" class="box-name-input" 
+               style="width: 100%; padding: 8px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; color: white;"
+               value="${boxState.name}" oninput="boxState.name = this.value">
+      </div>
+    </div>
+
+    <div class="box-content" id="boxContent">
+      <div class="empty-state">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span data-i18n="boxWindow.dropFilesHere">Drop files here</span>
+      </div>
+      <div class="drop-hint" id="dropHint">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p data-i18n="boxWindow.dropFilesToAdd">Drop files to add to box</p>
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script>
+    const savedLang = localStorage.getItem('iTopLanguage') || 'ru';
+    if (window.i18n && window.i18n.currentLang !== savedLang) {
+      window.i18n.currentLang = savedLang;
+      window.i18n.applyTranslations();
+    }
+
+    function tBox(key, vars = {}, fallback) {
+      const raw = window.i18n ? window.i18n.t(key) : key;
+      const text = raw === key && fallback ? fallback : raw;
+      return text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+    }
+
+    document.title = tBox('boxWindow.title', {}, document.title);
+
+    // Icons SVG map
+    const boxIcons = {
+      grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+      folder: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+      file: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>',
+      calendar: '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>',
+      clock: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+      cloud: '<path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/>',
+      zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+      settings: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>',
+      search: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>',
+      camera: '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
+      music: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
+      video: '<rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="17" x2="22" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/>',
+      gamepad: '<line x1="6" y1="12" x2="10" y2="12"/><line x1="8" y1="10" x2="8" y2="14"/><line x1="15" y1="13" x2="15.01" y2="13"/><line x1="18" y1="11" x2="18.01" y2="11"/><rect x="2" y="6" width="20" height="12" rx="2"/>',
+      code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
+      book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+      star: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>',
+      heart: '<path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>',
+      home: '<path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>',
+      mail: '<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>',
+      phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+      calculator: '<rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="16" y1="18" x2="16" y2="18"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/>',
+      download: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>',
+      upload: '<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>',
+      eye: '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>',
+      filter: '<polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/>',
+      edit: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>',
+      trash: '<polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>',
+      copy: '<rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>',
+      check: '<polyline points="20 6 9 17 4 12"/>',
+      x: '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>',
+      grid3x3: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><line x1="3" y1="11" x2="21" y2="11"/><line x1="3" y1="18" x2="21" y2="18"/><line x1="11" y1="3" x2="11" y2="21"/><line x1="18" y1="3" x2="18" y2="21"/>'
+    };
+
+    // Box state
+    const boxState = {
+      id: '',
+      name: '',
+      icon: 'folder',
+      color: '#8b5cf6',
+      width: 220,
+      height: 350,
+      transparency: 90,
+      showFiles: true,
+      items: [],
+      isPortal: false,
+      folderPath: '',
+      layoutMode: 'list'
+    };
+
+    // Colors for picker
+    const colors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#6b7280', '#1f2937'];
+
+    // Settings panel state
+    let settingsPanelOpen = false;
+
+    // Get box info from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    boxState.id = urlParams.get('id') || Date.now().toString();
+    boxState.name = urlParams.get('name') || tBox('boxWindow.defaultName', {}, 'Box');
+    boxState.icon = urlParams.get('icon') || 'folder';
+    boxState.color = urlParams.get('color') || '#8b5cf6';
+    boxState.isPortal = urlParams.get('isPortal') === '1';
+    boxState.folderPath = urlParams.get('folderPath') || '';
+    boxState.layoutMode = urlParams.get('layoutMode') || 'list';
+
+    // Set box info
+    document.getElementById('boxName').textContent = boxState.name;
+    
+    // Set icon
+    function updateBoxIcon() {
+      const iconSvg = boxIcons[boxState.icon] || boxIcons.folder;
+      document.getElementById('boxIcon').innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+          ${iconSvg}
+        </svg>
+      `;
+      document.getElementById('boxIcon').style.backgroundColor = boxState.color + '40';
+    }
+    updateBoxIcon();
+
+    function applyLayoutMode() {
+      const content = document.getElementById('boxContent');
+      if (content) {
+        content.classList.toggle('grid', boxState.layoutMode === 'grid');
+      }
+    }
+    applyLayoutMode();
+    
+    // Initialize settings panel
+    initSettingsPanel();
+
+    async function loadBoxConfig() {
+      if (!window.electronAPI) {
+        refreshBoxContent();
+        return;
+      }
+
+      const config = await window.electronAPI.getBoxConfig(boxState.id);
+      if (config) {
+        boxState.name = config.name || boxState.name;
+        boxState.icon = config.icon || boxState.icon;
+        boxState.color = config.color || boxState.color;
+        boxState.items = Array.isArray(config.items) ? config.items : [];
+        boxState.isPortal = !!config.isPortal;
+        boxState.folderPath = config.folderPath || '';
+        boxState.layoutMode = config.layoutMode || boxState.layoutMode;
+        boxState.transparency = config.transparency ?? boxState.transparency;
+      }
+
+      document.getElementById('boxName').textContent = boxState.name;
+      updateBoxIcon();
+      applyLayoutMode();
+      const alpha1 = Math.max(0x22, Math.min(0xDD, Math.round(255 * (boxState.transparency / 100)))).toString(16).padStart(2, '0');
+      const alpha2 = Math.max(0x11, Math.min(0x88, Math.round(255 * ((boxState.transparency - 30) / 100)))).toString(16).padStart(2, '0');
+      document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}${alpha1}, ${boxState.color}${alpha2})`;
+
+      initSettingsPanel();
+      refreshBoxContent();
+    }
+
+    function renderFilesList(files, emptyMessage) {
+      const content = document.getElementById('boxContent');
+      if (!content) return;
+
+      if (!files || files.length === 0) {
+        content.innerHTML = `
+          <div class="empty-state">
+            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+              <polyline points="14 2 14 8 20 8"/>
+            </svg>
+            <span>${emptyMessage}</span>
+          </div>
+        `;
+        return;
+      }
+
+      content.innerHTML = files.map(file => `
+        <div class="box-item" data-path="${file.path}">
+          <div class="item-icon" style="background: ${file.isDirectory ? boxState.color + '40' : 'rgba(59, 130, 246, 0.3)'};">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              ${file.isDirectory
+                ? '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>'
+                : '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>'}
+            </svg>
+          </div>
+          <span class="item-name">${file.name}</span>
+        </div>
+      `).join('');
+
+      content.querySelectorAll('.box-item').forEach(item => {
+        item.addEventListener('dblclick', () => {
+          const filePath = item.dataset.path;
+          if (filePath && window.electronAPI) {
+            window.electronAPI.openFile(filePath);
+          }
+        });
+      });
+    }
+
+    async function loadBoxItems() {
+      if (!window.electronAPI) return;
+      const result = await window.electronAPI.getBoxItems(boxState.id);
+      if (result?.success) {
+        renderFilesList(result.items, tBox('boxWindow.noItems'));
+      }
+    }
+
+    async function loadFolderPortalItems() {
+      if (!window.electronAPI || !boxState.folderPath) return;
+      const result = await window.electronAPI.getFolderFiles(boxState.folderPath);
+      if (result?.success) {
+        renderFilesList(result.items, tBox('boxWindow.folderEmpty'));
+      }
+    }
+
+    async function refreshBoxContent() {
+      if (!boxState.showFiles) {
+        const content = document.getElementById('boxContent');
+        if (content) {
+          content.innerHTML = `
+            <div class="empty-state">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+                <line x1="1" y1="12" x2="23" y2="12"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              </svg>
+              <span>${tBox('boxWindow.filesHidden')}</span>
+            </div>
+          `;
+        }
+        return;
+      }
+
+      if (boxState.isPortal && boxState.folderPath) {
+        await loadFolderPortalItems();
+        return;
+      }
+
+      if (boxState.items && boxState.items.length > 0) {
+        await loadBoxItems();
+        return;
+      }
+
+      await loadDesktopFiles();
+    }
+
+    loadBoxConfig();
+
+    // Context menu state
+    let contextMenuOpen = false;
+
+    // Right-click context menu on header
+    document.querySelector('.box-header').addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      showContextMenu(e.clientX, e.clientY);
+    });
+
+    // Close context menu on click elsewhere
+    document.addEventListener('click', () => {
+      hideContextMenu();
+    });
+
+    // Show context menu
+    function showContextMenu(x, y) {
+      hideContextMenu();
+      contextMenuOpen = true;
+
+      const menu = document.createElement('div');
+      menu.id = 'boxContextMenu';
+      menu.className = 'context-menu';
+      menu.style.left = `${x}px`;
+      menu.style.top = `${y}px`;
+
+      menu.innerHTML = `
+        <div class="context-menu-header">
+          <h4>${boxState.name}</h4>
+          <p>${tBox('boxWindow.context.settings')}</p>
+        </div>
+
+        <div class="context-menu-item" style="flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; width: 100%; font-size: 11px; color: rgba(255,255,255,0.7);">
+            <span>${tBox('boxWindow.context.color')}</span>
+            <span style="color: ${boxState.color};">●</span>
+          </div>
+          <div class="color-picker-mini">
+            ${colors.map(c => `
+              <div class="color-option-mini ${boxState.color === c ? 'active' : ''}"
+                   style="background-color: ${c};"
+                   onclick="changeColor('${c}')"></div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="context-menu-item" style="flex-direction: column; gap: 6px;">
+          <div style="display: flex; justify-content: space-between; width: 100%; font-size: 11px; color: rgba(255,255,255,0.7);">
+            <span>${tBox('boxWindow.context.transparency')}</span>
+            <span>${boxState.transparency}%</span>
+          </div>
+          <input type="range" min="10" max="100" value="${boxState.transparency}"
+               style="width: 100%; height: 4px;"
+               oninput="changeTransparency(this.value)">
+        </div>
+
+        <div class="context-menu-divider"></div>
+
+        <button class="context-menu-item" onclick="toggleFiles()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            ${boxState.showFiles ? '<circle cx="12" cy="12" r="3"/><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>' : '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><line x1="1" y1="12" x2="23" y2="12"/>'}
+          </svg>
+          <span>${boxState.showFiles ? tBox('boxWindow.context.hideFiles') : tBox('boxWindow.context.showFiles')}</span>
+        </button>
+
+        <button class="context-menu-item" onclick="openInApp()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+            <polyline points="15 3 21 3 21 9"/>
+            <line x1="10" y1="14" x2="21" y2="3"/>
+          </svg>
+          <span>${tBox('boxWindow.context.openInApp')}</span>
+        </button>
+
+        <div class="context-menu-divider"></div>
+
+        <button class="context-menu-item danger" onclick="closeBox()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span>${tBox('boxWindow.context.close')}</span>
+        </button>
+      `;
+
+      document.body.appendChild(menu);
+    }
+
+    // Hide context menu
+    function hideContextMenu() {
+      const menu = document.getElementById('boxContextMenu');
+      if (menu) {
+        menu.remove();
+      }
+      contextMenuOpen = false;
+    }
+    
+    // ========================================
+    // Settings Panel Functions
+    // ========================================
+    
+    function initSettingsPanel() {
+      const colorPicker = document.getElementById('boxColorPicker');
+      const iconPicker = document.getElementById('boxIconPicker');
+      
+      // Add colors
+      if (colorPicker) {
+        colorPicker.innerHTML = colors.map(c => `
+          <div class="box-color-option ${boxState.color === c ? 'active' : ''}"
+               style="background-color: ${c};"
+               onclick="setBoxColor('${c}')"></div>
+        `).join('');
+      }
+      
+      // Add icons
+      if (iconPicker) {
+        const icons = Object.keys(boxIcons);
+        iconPicker.innerHTML = icons.map(icon => `
+          <div class="box-color-option ${boxState.icon === icon ? 'active' : ''}"
+               style="background-color: ${boxState.color}40; display: flex; align-items: center; justify-content: center;"
+               onclick="setBoxIcon('${icon}')">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+              ${boxIcons[icon]}
+            </svg>
+          </div>
+        `).join('');
+      }
+      
+      // Set initial transparency
+      const transparencySlider = document.querySelector('.box-transparency-slider input');
+      const transparencyValue = document.getElementById('transparencyValue');
+      if (transparencySlider) {
+        transparencySlider.value = boxState.transparency;
+      }
+      if (transparencyValue) {
+        transparencyValue.textContent = boxState.transparency;
+      }
+    }
+    
+    window.toggleSettingsPanel = () => {
+      const panel = document.getElementById('settingsPanel');
+      if (panel) {
+        settingsPanelOpen = !settingsPanelOpen;
+        panel.style.display = settingsPanelOpen ? 'block' : 'none';
+      }
+    };
+    
+    window.setBoxColor = (color) => {
+      boxState.color = color;
+      
+      // Update active state
+      document.querySelectorAll('.box-color-option').forEach(opt => {
+        opt.classList.toggle('active', opt.style.backgroundColor === color);
+      });
+      
+      updateBoxIcon();
+      document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}DD, ${boxState.color}88)`;
+      
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { color: boxState.color });
+      }
+    };
+    
+    window.setBoxIcon = (icon) => {
+      boxState.icon = icon;
+      updateBoxIcon();
+      
+      // Update active state
+      document.querySelectorAll('#boxIconPicker .box-color-option').forEach(opt => {
+        opt.classList.toggle('active', opt.textContent.includes(icon));
+      });
+      
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { icon: boxState.icon });
+      }
+    };
+    
+    window.updateBoxTransparency = (value) => {
+      boxState.transparency = parseInt(value);
+      document.getElementById('transparencyValue').textContent = value;
+      
+      const alpha1 = Math.max(0x22, Math.min(0xDD, Math.round(255 * (value / 100)))).toString(16).padStart(2, '0');
+      const alpha2 = Math.max(0x11, Math.min(0x88, Math.round(255 * ((value - 30) / 100)))).toString(16).padStart(2, '0');
+      document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}${alpha1}, ${boxState.color}${alpha2})`;
+      
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { transparency: boxState.transparency });
+      }
+    };
+
+    // Context menu actions
+    window.changeIcon = () => {
+      const icons = Object.keys(boxIcons);
+      const currentIndex = icons.indexOf(boxState.icon);
+      const nextIndex = (currentIndex + 1) % icons.length;
+      boxState.icon = icons[nextIndex];
+      updateBoxIcon();
+      
+      // Notify main window
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { icon: boxState.icon });
+      }
+    };
+
+    window.changeColor = (color) => {
+      boxState.color = color;
+      updateBoxIcon();
+
+      // Update box background with new color
+      document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}DD, ${boxState.color}88)`;
+
+      // Notify main window
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { color: boxState.color });
+      }
+    };
+
+    window.changeTransparency = (value) => {
+      boxState.transparency = parseInt(value);
+      // Вычисляем прозрачность для градиента (0-100 -> DD-88)
+      const alpha1 = Math.max(0x22, Math.min(0xDD, Math.round(255 * (value / 100)))).toString(16).padStart(2, '0');
+      const alpha2 = Math.max(0x11, Math.min(0x88, Math.round(255 * ((value - 30) / 100)))).toString(16).padStart(2, '0');
+      document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}${alpha1}, ${boxState.color}${alpha2})`;
+
+      if (window.electronAPI) {
+        window.electronAPI.updateBoxConfig(boxState.id, { transparency: boxState.transparency });
+      }
+    };
+
+    window.toggleFiles = () => {
+      boxState.showFiles = !boxState.showFiles;
+      refreshBoxContent();
+    };
+
+    window.renameBox = () => {
+      const newName = prompt('Enter new name:', boxState.name);
+      if (newName && newName.trim()) {
+        boxState.name = newName.trim();
+        document.getElementById('boxName').textContent = newName;
+        
+        if (window.electronAPI) {
+          window.electronAPI.updateBoxConfig(boxState.id, { name: boxState.name });
+        }
+      }
+    };
+
+    window.openInApp = () => {
+      if (window.electronAPI) {
+        window.electronAPI.navigateToSettings();
+      }
+    };
+
+    window.closeBox = () => {
+      window.close();
+    };
+
+    // Close button
+    document.getElementById('closeBtn').addEventListener('click', () => {
+      window.close();
+    });
+
+    // Settings button
+    document.getElementById('settingsBtn').addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleSettingsPanel();
+    });
+
+    // Load desktop files
+    async function loadDesktopFiles() {
+      if (!window.electronAPI) return;
+      try {
+        const files = await window.electronAPI.getDesktopFiles();
+        renderFilesList(files, 'No files on desktop');
+      } catch (error) {
+        console.error('Error loading desktop files:', error);
+      }
+    }
+
+    // Set initial background with box color
+    document.querySelector('.box-container').style.background = `linear-gradient(135deg, ${boxState.color}DD, ${boxState.color}88)`;
+
+
+    // ========================================
+    // Listen for config updates from main process
+    // ========================================
+    
+    if (window.electronAPI) {
+      window.electronAPI.onBoxConfigUpdated((boxId, updates) => {
+        console.log(`Box ${boxId} config updated:`, updates);
+        
+        // Update box state
+        if (boxId === boxState.id) {
+          if (updates.color !== undefined) {
+            boxState.color = updates.color;
+            updateBoxIcon();
+            // Update background gradient with new color
+            const container = document.querySelector('.box-container');
+            container.style.background = `linear-gradient(135deg, ${boxState.color}DD, ${boxState.color}88)`;
+          }
+          
+          if (updates.transparency !== undefined) {
+            boxState.transparency = updates.transparency;
+            const container = document.querySelector('.box-container');
+            // Обновляем прозрачность через alpha канал в HEX
+            const alpha1 = Math.max(0x22, Math.min(0xDD, Math.round(255 * (boxState.transparency / 100)))).toString(16).padStart(2, '0');
+            const alpha2 = Math.max(0x11, Math.min(0x88, Math.round(255 * ((boxState.transparency - 30) / 100)))).toString(16).padStart(2, '0');
+            container.style.background = `linear-gradient(135deg, ${boxState.color}${alpha1}, ${boxState.color}${alpha2})`;
+          }
+          
+          if (updates.name !== undefined) {
+            boxState.name = updates.name;
+            document.getElementById('boxName').textContent = boxState.name;
+          }
+          
+          if (updates.icon !== undefined) {
+            boxState.icon = updates.icon;
+            updateBoxIcon();
+          }
+          
+          if (updates.items !== undefined) {
+            boxState.items = Array.isArray(updates.items) ? updates.items : boxState.items;
+          }
+
+          if (updates.isPortal !== undefined) {
+            boxState.isPortal = !!updates.isPortal;
+          }
+
+          if (updates.folderPath !== undefined) {
+            boxState.folderPath = updates.folderPath || '';
+          }
+
+          if (updates.layoutMode !== undefined) {
+            boxState.layoutMode = updates.layoutMode || boxState.layoutMode;
+            applyLayoutMode();
+          }
+
+          if (updates.transparency !== undefined) {
+            const transparencyValue = document.getElementById('transparencyValue');
+            if (transparencyValue) {
+              transparencyValue.textContent = boxState.transparency;
+            }
+          }
+          
+          console.log(`Box ${boxState.id} appearance updated`);
+          refreshBoxContent();
+        }
+      });
+    }
+
+    // ========================================
+    // Drag & Drop Functionality
+    // ========================================
+
+    const boxContent = document.getElementById('boxContent');
+    const dropHint = document.getElementById('dropHint');
+
+    // Prevent default drag behaviors
+    ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+      boxContent.addEventListener(eventName, preventDefaults, false);
+      document.body.addEventListener(eventName, preventDefaults, false);
+    });
+
+    function preventDefaults(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+
+    // Highlight drop area when item is dragged over it
+    ['dragenter', 'dragover'].forEach(eventName => {
+      boxContent.addEventListener(eventName, highlight, false);
+    });
+
+    ['dragleave', 'drop'].forEach(eventName => {
+      boxContent.addEventListener(eventName, unhighlight, false);
+    });
+
+    function highlight(e) {
+      boxContent.classList.add('drag-over');
+      dropHint.classList.add('visible');
+    }
+
+    function unhighlight(e) {
+      boxContent.classList.remove('drag-over');
+      dropHint.classList.remove('visible');
+    }
+
+    // Handle dropped files
+    boxContent.addEventListener('drop', handleDrop, false);
+
+    async function handleDrop(e) {
+      const dt = e.dataTransfer;
+      const files = dt.files;
+
+      if (files.length > 0) {
+        // Show loading state
+        dropHint.innerHTML = `
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+          </svg>
+          <p>${tBox('boxWindow.addingFiles', { count: files.length })}</p>
+        `;
+
+        try {
+          const droppedPaths = [];
+
+          // Process each file
+          for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const filePath = file.path;
+
+            if (!filePath) continue;
+
+            // Check if this is a Private Box
+            const isPrivateBox = boxState.name.toLowerCase().includes('private');
+
+            if (isPrivateBox && window.electronAPI) {
+              // Add to Private Box (requires unlock)
+              const status = await window.electronAPI.getPrivateBoxStatus();
+              
+              if (!status.unlocked) {
+                alert(tBox('boxWindow.privateBoxLocked'));
+                continue;
+              }
+
+              const result = await window.electronAPI.addItemToPrivateBox(filePath);
+              if (!result.success) {
+                console.error('Failed to add to Private Box:', result.error);
+              }
+            } else {
+              droppedPaths.push(filePath);
+            }
+          }
+
+          if (droppedPaths.length > 0 && window.electronAPI) {
+            await window.electronAPI.addItemsToBox(boxState.id, droppedPaths);
+          }
+
+          // Reload files after drop
+          setTimeout(() => {
+            refreshBoxContent();
+            dropHint.innerHTML = `
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              <p>${tBox('boxWindow.dropFilesToAdd')}</p>
+            `;
+          }, 500);
+
+        } catch (error) {
+          console.error('Error handling drop:', error);
+          dropHint.innerHTML = `
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="1.5">
+              <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+            </svg>
+            <p>${tBox('boxWindow.errorAddingFiles')}</p>
+          `;
+        }
+      }
+    }
+  </script>
+</body>
+</html>

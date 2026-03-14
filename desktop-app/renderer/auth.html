@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iTop Account</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .auth-container {
+      width: 100%;
+      max-width: 440px;
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 40px;
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .auth-logo {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+      font-size: 32px;
+    }
+
+    .auth-title {
+      color: white;
+      font-size: 24px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 24px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.3s;
+    }
+
+    .auth-tab.active {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+    }
+
+    .auth-tab:hover:not(.active) {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .auth-form {
+      display: none;
+    }
+
+    .auth-form.active {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 14px 16px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      transition: all 0.3s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.5);
+      background: rgba(255, 255, 255, 0.12);
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+    }
+
+    .form-input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
+    .form-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .form-checkbox input[type="checkbox"] {
+      width: 18px;
+      height: 18px;
+      accent-color: #8b5cf6;
+      cursor: pointer;
+    }
+
+    .form-checkbox label {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .auth-button {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
+    }
+
+    .auth-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+
+    .auth-button:active {
+      transform: translateY(0);
+    }
+
+    .auth-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      margin: 24px 0;
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 13px;
+    }
+
+    .auth-divider::before,
+    .auth-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .auth-divider span {
+      padding: 0 16px;
+    }
+
+    .social-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .social-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .social-button:hover {
+      background: rgba(255, 255, 255, 0.12);
+      border-color: rgba(255, 255, 255, 0.25);
+      transform: translateY(-1px);
+    }
+
+    .social-button svg {
+      width: 20px;
+      height: 20px;
+    }
+
+    .auth-footer {
+      margin-top: 24px;
+      text-align: center;
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 13px;
+    }
+
+    .auth-footer a {
+      color: #8b5cf6;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #fca5a5;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: shake 0.5s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      color: #6ee7b7;
+      font-size: 13px;
+      margin-bottom: 20px;
+      display: none;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top-color: white;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .pro-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: black;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      margin-left: 8px;
+    }
+
+    .link-button {
+      background: none;
+      border: none;
+      color: #8b5cf6;
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 0;
+    }
+
+    .link-button:hover {
+      color: #a78bfa;
+    }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <div class="auth-header">
+      <div class="auth-logo">🔐</div>
+      <h1 class="auth-title">iTop Account</h1>
+      <p class="auth-subtitle">Sign in to sync your desktop settings</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+    </div>
+
+    <!-- Error Message -->
+    <div id="errorMessage" class="error-message"></div>
+    
+    <!-- Success Message -->
+    <div id="successMessage" class="success-message"></div>
+
+    <!-- Sign In Form -->
+    <form id="signInForm" class="auth-form active" onsubmit="handleSignIn(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" id="signInEmail" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" placeholder="••••••••" id="signInPassword" required>
+      </div>
+
+      <div class="form-checkbox">
+        <input type="checkbox" id="rememberMe">
+        <label for="rememberMe">Remember me</label>
+      </div>
+
+      <button type="submit" class="auth-button" id="signInButton">
+        Sign In
+      </button>
+
+      <div class="auth-footer">
+        <button type="button" class="link-button" onclick="showResetPassword()">Forgot password?</button>
+      </div>
+
+      <div class="auth-divider">
+        <span>or continue with</span>
+      </div>
+
+      <div class="social-buttons">
+        <button type="button" class="social-button" onclick="handleGoogleSignIn()">
+          <svg viewBox="0 0 24 24" fill="currentColor">
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+          </svg>
+          Google
+        </button>
+      </div>
+    </form>
+
+    <!-- Sign Up Form -->
+    <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-input" placeholder="John Doe" id="signUpName">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" id="signUpEmail" required>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" placeholder="At least 8 characters" id="signUpPassword" required minlength="8">
+      </div>
+
+      <div class="form-checkbox">
+        <input type="checkbox" id="agreeTerms" required>
+        <label for="agreeTerms">I agree to the <a href="#" class="link-button" onclick="openTerms()">Terms & Conditions</a></label>
+      </div>
+
+      <button type="submit" class="auth-button" id="signUpButton">
+        Create Account
+      </button>
+
+      <div class="auth-footer">
+        Already have an account? <button type="button" class="link-button" onclick="switchTab('signin')">Sign In</button>
+      </div>
+    </form>
+
+    <!-- Reset Password Form -->
+    <form id="resetPasswordForm" class="auth-form" onsubmit="handleResetPassword(event)">
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" id="resetEmail" required>
+      </div>
+
+      <button type="submit" class="auth-button" id="resetButton">
+        Send Reset Link
+      </button>
+
+      <div class="auth-footer">
+        <button type="button" class="link-button" onclick="switchTab('signin')">← Back to Sign In</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    // Переключение табов
+    function switchTab(tab) {
+      // Скрыть все формы
+      document.querySelectorAll('.auth-form').forEach(form => {
+        form.classList.remove('active');
+      });
+      
+      // Убрать активность с табов
+      document.querySelectorAll('.auth-tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Показать нужную форму
+      if (tab === 'signin') {
+        document.getElementById('signInForm').classList.add('active');
+        document.querySelectorAll('.auth-tab')[0].classList.add('active');
+      } else if (tab === 'signup') {
+        document.getElementById('signUpForm').classList.add('active');
+        document.querySelectorAll('.auth-tab')[1].classList.add('active');
+      } else if (tab === 'reset') {
+        document.getElementById('resetPasswordForm').classList.add('active');
+      }
+      
+      // Скрыть сообщения
+      hideMessages();
+    }
+
+    // Показать сообщения об ошибке
+    function showError(message) {
+      const errorEl = document.getElementById('errorMessage');
+      errorEl.textContent = message;
+      errorEl.classList.add('show');
+    }
+
+    // Показать сообщение об успехе
+    function showSuccess(message) {
+      const successEl = document.getElementById('successMessage');
+      successEl.textContent = message;
+      successEl.classList.add('show');
+    }
+
+    // Скрыть сообщения
+    function hideMessages() {
+      document.getElementById('errorMessage').classList.remove('show');
+      document.getElementById('successMessage').classList.remove('show');
+    }
+
+    // Показать форму сброса пароля
+    function showResetPassword() {
+      switchTab('reset');
+    }
+
+    // Обработка входа
+    async function handleSignIn(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('signInEmail').value;
+      const password = document.getElementById('signInPassword').value;
+      const rememberMe = document.getElementById('rememberMe').checked;
+      
+      const button = document.getElementById('signInButton');
+      button.disabled = true;
+      button.innerHTML = '<span class="loading-spinner"></span>Signing in...';
+      
+      try {
+        const result = await window.electronAPI.accountSignIn(email, password, rememberMe);
+        
+        if (result.success) {
+          showSuccess('Successfully signed in! Closing window...');
+          setTimeout(() => {
+            window.close();
+          }, 1500);
+        } else {
+          showError(result.error || 'Failed to sign in');
+        }
+      } catch (error) {
+        showError(error.message || 'An error occurred');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = 'Sign In';
+      }
+    }
+
+    // Обработка регистрации
+    async function handleSignUp(event) {
+      event.preventDefault();
+      
+      const name = document.getElementById('signUpName').value;
+      const email = document.getElementById('signUpEmail').value;
+      const password = document.getElementById('signUpPassword').value;
+      
+      const button = document.getElementById('signUpButton');
+      button.disabled = true;
+      button.innerHTML = '<span class="loading-spinner"></span>Creating account...';
+      
+      try {
+        const result = await window.electronAPI.accountSignUp(email, password, name);
+        
+        if (result.success) {
+          showSuccess('Account created! Please check your email to confirm.');
+          setTimeout(() => {
+            switchTab('signin');
+          }, 2000);
+        } else {
+          showError(result.error || 'Failed to create account');
+        }
+      } catch (error) {
+        showError(error.message || 'An error occurred');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = 'Create Account';
+      }
+    }
+
+    // Обработка сброса пароля
+    async function handleResetPassword(event) {
+      event.preventDefault();
+      
+      const email = document.getElementById('resetEmail').value;
+      
+      const button = document.getElementById('resetButton');
+      button.disabled = true;
+      button.innerHTML = '<span class="loading-spinner"></span>Sending...';
+      
+      try {
+        const result = await window.electronAPI.accountResetPassword(email);
+        
+        if (result.success) {
+          showSuccess('Password reset email sent! Check your inbox.');
+        } else {
+          showError(result.error || 'Failed to send reset email');
+        }
+      } catch (error) {
+        showError(error.message || 'An error occurred');
+      } finally {
+        button.disabled = false;
+        button.innerHTML = 'Send Reset Link';
+      }
+    }
+
+    // Google Sign In (заглушка)
+    function handleGoogleSignIn() {
+      showError('Google Sign In is not configured yet');
+    }
+
+    // Открыть условия использования
+    function openTerms() {
+      window.electronAPI.openExternal('https://itopsoftware.com/terms');
+    }
+
+    // Инициализация
+    async function init() {
+      // Проверить текущую сессию
+      const session = await window.electronAPI.accountLoadSession();
+      
+      if (session.isAuthenticated) {
+        showSuccess(`Already signed in as ${session.user.email}`);
+        setTimeout(() => {
+          window.close();
+        }, 2000);
+      }
+    }
+
+    // Запуск
+    init();
+  </script>
+</body>
+</html>

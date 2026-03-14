@@ -1,0 +1,48 @@
+# Node modules
+node_modules/
+
+# Build outputs
+dist/
+build/
+out/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Archives
+*.tar.gz
+*.zip
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+venv/
+
+# Supabase local development
+.branches
+.temp
+.secrets

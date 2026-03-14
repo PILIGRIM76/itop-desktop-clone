@@ -1,0 +1,2311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title data-i18n="widgetWindow.title">Desktop Widget</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: transparent;
+      overflow: hidden;
+      height: 100vh;
+      width: 100vw;
+      user-select: none;
+    }
+
+    .widget-container {
+      position: absolute;
+      background: rgba(37, 42, 61, 0.85);
+      backdrop-filter: blur(15px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s;
+    }
+
+    .widget-container:hover {
+      border-color: rgba(139, 92, 246, 0.5);
+      box-shadow: 0 12px 40px rgba(139, 92, 246, 0.2);
+    }
+
+    .widget-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 16px 16px 0 0;
+      cursor: move;
+      -webkit-app-region: drag;
+    }
+
+    .widget-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .widget-title svg {
+      color: var(--widget-color, #8b5cf6);
+    }
+
+    .widget-actions {
+      display: flex;
+      gap: 6px;
+      -webkit-app-region: no-drag;
+    }
+
+    .widget-action-btn {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+    }
+
+    .widget-action-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: white;
+    }
+
+    .widget-action-btn.close:hover {
+      background: rgba(239, 68, 68, 0.8);
+    }
+
+    .widget-content {
+      padding: 14px;
+      color: white;
+    }
+
+    /* Clock Widget */
+    .clock-widget {
+      text-align: center;
+    }
+
+    .clock-time {
+      font-size: 42px;
+      font-weight: 700;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .clock-date {
+      font-size: 14px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-top: 4px;
+    }
+
+    /* Weather Widget */
+    .weather-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .weather-main {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .weather-icon {
+      width: 48px;
+      height: 48px;
+      color: #fbbf24;
+    }
+
+    .weather-temp {
+      font-size: 32px;
+      font-weight: 700;
+    }
+
+    .weather-desc {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+    }
+
+    .weather-details {
+      display: flex;
+      gap: 16px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    /* Schedule Widget */
+    .schedule-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .schedule-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      border-left: 3px solid var(--event-color, #8b5cf6);
+    }
+
+    .schedule-time {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      min-width: 50px;
+    }
+
+    .schedule-event {
+      flex: 1;
+      font-size: 13px;
+    }
+
+    /* Notes Widget */
+    .notes-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .note-item {
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 8px;
+      font-size: 13px;
+      position: relative;
+    }
+
+    .note-item textarea {
+      width: 100%;
+      min-height: 60px;
+      background: transparent;
+      border: none;
+      color: white;
+      font-family: inherit;
+      font-size: 13px;
+      resize: vertical;
+    }
+
+    .note-item textarea:focus {
+      outline: none;
+    }
+
+    /* Pomodoro Widget */
+    .pomodoro-widget {
+      text-align: center;
+    }
+
+    .pomodoro-timer {
+      font-size: 48px;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #10b981, #06b6d4);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .pomodoro-status {
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin: 8px 0;
+    }
+
+    .pomodoro-controls {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 12px;
+    }
+
+    .pomodoro-btn {
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pomodoro-btn.start {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: white;
+    }
+
+    .pomodoro-btn.pause {
+      background: linear-gradient(135deg, #f59e0b, #d97706);
+      color: white;
+    }
+
+    .pomodoro-btn.reset {
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+    }
+
+    .pomodoro-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Quick Tools Widget */
+    .quick-tools-widget {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .quick-tool-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .quick-tool-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--tool-color, #8b5cf6);
+      transform: translateY(-2px);
+    }
+
+    .quick-tool-btn svg {
+      color: var(--tool-color, #8b5cf6);
+    }
+
+    .quick-tool-btn span {
+      font-size: 10px;
+      text-align: center;
+    }
+
+    /* Chat AI Widget */
+    .chat-ai-widget {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-messages {
+      flex: 1;
+      max-height: 200px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .chat-message {
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 12px;
+      max-width: 85%;
+    }
+
+    .chat-message.user {
+      background: rgba(139, 92, 246, 0.3);
+      align-self: flex-end;
+    }
+
+    .chat-message.ai {
+      background: rgba(255, 255, 255, 0.1);
+      align-self: flex-start;
+    }
+
+    .chat-input-wrapper {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chat-input {
+      flex: 1;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+    }
+
+    .chat-input:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+
+    .chat-send-btn {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .chat-send-btn:hover {
+      transform: scale(1.05);
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Context Menu for Widgets */
+    .widget-context-menu {
+      position: fixed;
+      z-index: 100000;
+      min-width: 220px;
+      background: rgba(37, 42, 61, 0.95);
+      backdrop-filter: blur(15px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 10px;
+      padding: 6px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      animation: widgetContextMenuFadeIn 0.15s ease;
+    }
+
+    @keyframes widgetContextMenuFadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    .widget-context-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 10px 12px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 13px;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.2s;
+      text-align: left;
+    }
+
+    .widget-context-menu-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .widget-context-menu-item.danger {
+      color: #ef4444;
+    }
+
+    .widget-context-menu-item.danger:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .widget-context-menu-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 6px 0;
+    }
+
+    .widget-context-menu-header {
+      padding: 8px 12px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      margin-bottom: 6px;
+    }
+
+    .widget-context-menu-header h4 {
+      color: white;
+      font-size: 13px;
+      font-weight: 600;
+      margin: 0;
+    }
+
+    .widget-context-menu-header p {
+      color: rgba(255, 255, 255, 0.5);
+      font-size: 11px;
+      margin: 4px 0 0 0;
+    }
+
+    .widget-context-menu-slider {
+      padding: 12px;
+    }
+
+    .widget-context-menu-slider label {
+      display: block;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .widget-context-menu-slider input[type="range"] {
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 2px;
+      outline: none;
+      -webkit-appearance: none;
+    }
+
+    .widget-context-menu-slider input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: #8b5cf6;
+      border-radius: 50%;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .widget-context-menu-slider input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      background: #a78bfa;
+    }
+
+    .widget-color-picker {
+      padding: 10px 12px;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .widget-color-option {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .widget-color-option:hover {
+      transform: scale(1.2);
+    }
+
+    .widget-color-option.active {
+      border-color: white;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+
+    /* Widget Settings Panel */
+    .widget-settings-panel {
+      margin-top: 10px;
+      padding: 12px;
+      background: rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      display: none;
+      max-height: 280px;
+      overflow-y: auto;
+      box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .widget-settings-panel.open {
+      display: block;
+      animation: settingsPanelSlideIn 0.2s ease;
+    }
+
+    @keyframes settingsPanelSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .widget-settings-panel::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .widget-settings-panel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .widget-settings-panel::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.7);
+      border-radius: 3px;
+    }
+
+    .widget-settings-panel::-webkit-scrollbar-thumb:hover {
+      background: rgba(139, 92, 246, 1);
+    }
+
+    .widget-settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .widget-settings-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .widget-settings-label {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .widget-settings-control {
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .widget-settings-control select,
+    .widget-settings-control input[type="text"],
+    .widget-settings-control input[type="number"] {
+      width: 100%;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      color: white;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .widget-settings-control select:focus,
+    .widget-settings-control input[type="text"]:focus,
+    .widget-settings-control input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.8);
+      background: rgba(255, 255, 255, 0.18);
+    }
+
+    .widget-settings-control input[type="color"] {
+      width: 100%;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 2px;
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .widget-settings-control input[type="range"] {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+      -webkit-appearance: none;
+    }
+
+    .widget-settings-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(139, 92, 246, 0.5);
+      transition: all 0.2s;
+    }
+
+    .widget-settings-control input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 10px rgba(139, 92, 246, 0.7);
+    }
+
+    .widget-settings-toggle {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .widget-settings-btn {
+      width: 100%;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.3), rgba(139, 92, 246, 0.2));
+      border: 1px solid rgba(139, 92, 246, 0.4);
+      border-radius: 8px;
+      color: white;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .widget-settings-btn:hover {
+      background: linear-gradient(135deg, rgba(139, 92, 246, 0.5), rgba(139, 92, 246, 0.3));
+      border-color: rgba(139, 92, 246, 0.7);
+      transform: translateY(-1px);
+    }
+
+    .widget-settings-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Dropdown Settings Panel */
+    .widget-dropdown-panel {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      width: 280px;
+      background: rgba(30, 35, 50, 0.98);
+      backdrop-filter: blur(20px);
+      border-radius: 12px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      overflow: hidden;
+      display: none;
+      animation: dropdownFadeIn 0.2s ease;
+    }
+
+    .widget-dropdown-panel.open {
+      display: block;
+    }
+
+    @keyframes dropdownFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .widget-dropdown-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+      background: rgba(139, 92, 246, 0.1);
+    }
+
+    .widget-dropdown-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .widget-dropdown-close {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .widget-dropdown-close:hover {
+      background: rgba(239, 68, 68, 0.8);
+    }
+
+    .widget-dropdown-content {
+      padding: 14px;
+      max-height: 320px;
+      overflow-y: auto;
+    }
+
+    .widget-dropdown-content::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    .widget-dropdown-content::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .widget-dropdown-content::-webkit-scrollbar-thumb {
+      background: rgba(139, 92, 246, 0.6);
+      border-radius: 3px;
+    }
+
+    .dropdown-section {
+      margin-bottom: 16px;
+    }
+
+    .dropdown-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .dropdown-section-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: rgba(139, 92, 246, 0.9);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 10px;
+    }
+
+    .dropdown-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .dropdown-row:last-child {
+      margin-bottom: 0;
+    }
+
+    .dropdown-label {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.85);
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .dropdown-control {
+      flex: 1;
+      min-width: 100px;
+    }
+
+    .dropdown-control select,
+    .dropdown-control input[type="text"],
+    .dropdown-control input[type="number"] {
+      width: 100%;
+      padding: 6px 10px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: white;
+      font-size: 12px;
+      transition: all 0.2s;
+    }
+
+    .dropdown-control select:focus,
+    .dropdown-control input[type="text"]:focus,
+    .dropdown-control input[type="number"]:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.7);
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .dropdown-control input[type="color"] {
+      width: 100%;
+      height: 32px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      cursor: pointer;
+      padding: 2px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .dropdown-control input[type="range"] {
+      width: 100%;
+      height: 5px;
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+      -webkit-appearance: none;
+    }
+
+    .dropdown-control input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 16px;
+      height: 16px;
+      background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+      border-radius: 50%;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(139, 92, 246, 0.5);
+      transition: all 0.2s;
+    }
+
+    .dropdown-control input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+      box-shadow: 0 3px 10px rgba(139, 92, 246, 0.7);
+    }
+
+    .dropdown-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 0;
+    }
+
+    .dropdown-color-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 6px;
+    }
+
+    .dropdown-color-option {
+      width: 100%;
+      aspect-ratio: 1;
+      background-color: var(--color);
+      border-radius: 6px;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: all 0.2s;
+    }
+
+    .dropdown-color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .dropdown-color-option.active {
+      border-color: white;
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div id="widgetContainer" class="widget-container">
+    <div class="widget-header">
+      <div class="widget-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="7" height="7" rx="1"/>
+          <rect x="14" y="3" width="7" height="7" rx="1"/>
+          <rect x="3" y="14" width="7" height="7" rx="1"/>
+          <rect x="14" y="14" width="7" height="7" rx="1"/>
+        </svg>
+        <span id="widgetTitle">Widget</span>
+      </div>
+      <div class="widget-actions">
+        <button class="widget-action-btn" onclick="console.log('Settings clicked'); window.toggleSettingsDropdown && window.toggleSettingsDropdown();" title="Settings" data-i18n-title="widgetWindow.settings">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24 4.24l-4.24-4.24M6.34 6.34L2.1 2.1"/>
+          </svg>
+        </button>
+        <button class="widget-action-btn" onclick="refreshWidget()" title="Refresh" data-i18n-title="widgetWindow.refresh">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+        </button>
+        <button class="widget-action-btn close" onclick="closeWidget()" title="Close" data-i18n-title="widgetWindow.close">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div id="widgetContent" class="widget-content">
+      <!-- Widget content loaded dynamically -->
+    </div>
+    
+    <!-- Dropdown Settings Panel -->
+    <div id="settingsDropdown" class="widget-dropdown-panel">
+      <div class="widget-dropdown-header">
+        <div class="widget-dropdown-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6"/>
+          </svg>
+          <span id="dropdownTitle">Settings</span>
+        </div>
+        <button class="widget-dropdown-close" onclick="toggleSettingsDropdown()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div id="dropdownContent" class="widget-dropdown-content">
+        <!-- Settings content loaded dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script>
+    const savedLang = localStorage.getItem('iTopLanguage') || 'ru';
+    if (window.i18n && window.i18n.currentLang !== savedLang) {
+      window.i18n.currentLang = savedLang;
+      window.i18n.applyTranslations();
+    }
+
+    function tWidget(key, vars = {}, fallback) {
+      const raw = window.i18n ? window.i18n.t(key) : key;
+      const text = raw === key && fallback ? fallback : raw;
+      return text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+    }
+
+    document.title = tWidget('widgetWindow.title', {}, document.title);
+
+    // Get widget type from URL params
+    const urlParams = new URLSearchParams(window.location.search);
+    const widgetType = urlParams.get('type') || 'clock';
+    const widgetId = urlParams.get('id') || Date.now().toString();
+
+    // Store base size for scaling
+    let baseWidth = 300;
+    let baseHeight = 400;
+
+    // Set widget title based on type
+    const widgetTitles = {
+      clock: tWidget('widgetWindow.titles.clock', {}, 'Clock'),
+      weather: tWidget('widgetWindow.titles.weather', {}, 'Weather'),
+      schedule: tWidget('widgetWindow.titles.schedule', {}, 'Schedule'),
+      notes: tWidget('widgetWindow.titles.notes', {}, 'iNotes'),
+      pomodoro: tWidget('widgetWindow.titles.pomodoro', {}, 'iPomodoro'),
+      quickTools: tWidget('widgetWindow.titles.quickTools', {}, 'Quick Tools'),
+      chatAI: tWidget('widgetWindow.titles.chatAI', {}, 'Chat AI')
+    };
+
+    document.getElementById('widgetTitle').textContent = widgetTitles[widgetType] || tWidget('widgetWindow.defaultTitle', {}, 'Widget');
+
+    // Load widget content
+    loadWidgetContent(widgetType);
+    
+    // Update base size after content is loaded
+    setTimeout(() => {
+      const widgetContainer = document.getElementById('widgetContainer');
+      if (widgetContainer) {
+        baseWidth = widgetContainer.offsetWidth || 300;
+        baseHeight = widgetContainer.offsetHeight || 400;
+        console.log('Base size set to:', baseWidth, 'x', baseHeight);
+      }
+    }, 100);
+
+    function loadWidgetContent(type) {
+      const contentDiv = document.getElementById('widgetContent');
+
+      switch(type) {
+        case 'clock':
+          contentDiv.innerHTML = `
+            <div class="clock-widget">
+              <div class="clock-time" id="clockTime">00:00:00</div>
+              <div class="clock-date" id="clockDate">${tWidget('widgetWindow.clockLoading')}</div>
+            </div>
+          `;
+          updateClock();
+          setInterval(updateClock, 1000);
+          break;
+
+        case 'weather':
+          contentDiv.innerHTML = `
+            <div class="weather-widget">
+              <div class="weather-main">
+                <svg class="weather-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+                  <circle cx="12" cy="12" r="5"/>
+                </svg>
+                <div>
+                  <div class="weather-temp">22°C</div>
+                  <div class="weather-desc">${tWidget('widgetWindow.weatherPartlyCloudy')}</div>
+                </div>
+              </div>
+              <div class="weather-details">
+                <span>${tWidget('widgetWindow.weatherHumidity', { value: 65 })}</span>
+                <span>${tWidget('widgetWindow.weatherWind', { value: 12 })}</span>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'schedule':
+          contentDiv.innerHTML = `
+            <div class="schedule-widget">
+              <div class="schedule-item" style="--event-color: #8b5cf6">
+                <div class="schedule-time">10:00</div>
+                <div class="schedule-event">${tWidget('widgetWindow.schedule.teamMeeting')}</div>
+              </div>
+              <div class="schedule-item" style="--event-color: #10b981">
+                <div class="schedule-time">14:00</div>
+                <div class="schedule-event">${tWidget('widgetWindow.schedule.projectReview')}</div>
+              </div>
+              <div class="schedule-item" style="--event-color: #f59e0b">
+                <div class="schedule-time">16:30</div>
+                <div class="schedule-event">${tWidget('widgetWindow.schedule.clientCall')}</div>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'notes':
+          contentDiv.innerHTML = `
+            <div class="notes-widget">
+              <div class="note-item">
+                <textarea placeholder="${tWidget('widgetWindow.notesPlaceholder')}"></textarea>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'pomodoro':
+          contentDiv.innerHTML = `
+            <div class="pomodoro-widget">
+              <div class="pomodoro-timer" id="pomodoroTimer">25:00</div>
+              <div class="pomodoro-status" id="pomodoroStatus">${tWidget('widgetWindow.pomodoro.ready')}</div>
+              <div class="pomodoro-controls">
+                <button class="pomodoro-btn start" onclick="togglePomodoro()">${tWidget('widgetWindow.pomodoro.start')}</button>
+                <button class="pomodoro-btn reset" onclick="resetPomodoro()">${tWidget('widgetWindow.pomodoro.reset')}</button>
+              </div>
+            </div>
+          `;
+          break;
+
+        case 'quickTools':
+          contentDiv.innerHTML = `
+            <div class="quick-tools-widget">
+              <button class="quick-tool-btn" style="--tool-color: #8b5cf6" onclick="quickAction('screenshot')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.screenshot')}</span>
+              </button>
+              <button class="quick-tool-btn" style="--tool-color: #10b981" onclick="quickAction('files')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.files')}</span>
+              </button>
+              <button class="quick-tool-btn" style="--tool-color: #3b82f6" onclick="quickAction('settings')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24 4.24l-4.24-4.24M6.34 6.34L2.1 2.1"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.settings')}</span>
+              </button>
+              <button class="quick-tool-btn" style="--tool-color: #f59e0b" onclick="quickAction('calculator')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="6" x2="16" y2="6"/><line x1="16" y1="14" x2="16" y2="14"/><line x1="16" y1="18" x2="16" y2="18"/><line x1="12" y1="14" x2="12" y2="14"/><line x1="12" y1="18" x2="12" y2="18"/><line x1="8" y1="14" x2="8" y2="14"/><line x1="8" y1="18" x2="8" y2="18"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.calc')}</span>
+              </button>
+              <button class="quick-tool-btn" style="--tool-color: #ec4899" onclick="quickAction('ai')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.ai')}</span>
+              </button>
+              <button class="quick-tool-btn" style="--tool-color: #06b6d4" onclick="quickAction('calendar')">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span>${tWidget('widgetWindow.quickTools.calendar')}</span>
+              </button>
+            </div>
+          `;
+          break;
+
+        case 'chatAI':
+          contentDiv.innerHTML = `
+            <div class="chat-ai-widget">
+              <div class="chat-messages" id="chatMessages">
+                <div class="chat-message ai">${tWidget('widgetWindow.chat.greeting')}</div>
+              </div>
+              <div class="chat-input-wrapper">
+                <input type="text" class="chat-input" id="chatInput" placeholder="${tWidget('widgetWindow.chat.placeholder')}" onkeydown="handleChatKeydown(event)">
+                <button class="chat-send-btn" onclick="sendChatMessage()">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          `;
+          break;
+      }
+      
+      // Load dropdown settings content
+      loadDropdownSettings(type);
+    }
+
+    // Load dropdown settings content
+    function loadDropdownSettings(type) {
+      const dropdownContent = document.getElementById('dropdownContent');
+      const dropdownTitle = document.getElementById('dropdownTitle');
+      
+      // Map type to widget title
+      const titleMap = {
+        'clock': 'Clock',
+        'weather': 'Weather',
+        'schedule': 'Schedule',
+        'notes': 'iNotes',
+        'pomodoro': 'iPomodoro',
+        'quickTools': 'Quick Tools',
+        'chatAI': 'Chat AI'
+      };
+      
+      dropdownTitle.textContent = titleMap[type] || 'Settings';
+      
+      let settingsHtml = '';
+      
+      switch(type) {
+        case 'clock':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.appearance') || 'Appearance'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.clockStyle') || 'Clock Style'}</span>
+                <div class="dropdown-control">
+                  <select onchange="updateClockStyle(this.value)">
+                    <option value="digital">Digital</option>
+                    <option value="analog">Analog</option>
+                  </select>
+                </div>
+              </div>
+              <div class="dropdown-toggle-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.showSeconds') || 'Show Seconds'}</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="updateClockSeconds(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="dropdown-toggle-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.showDate') || 'Show Date'}</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="updateClockDate(this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'weather':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.location') || 'Location'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.enterCityName') || 'City'}</span>
+                <div class="dropdown-control">
+                  <input type="text" placeholder="Moscow" onchange="updateWeatherLocation(this.value)">
+                </div>
+              </div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.temperatureUnit') || 'Unit'}</span>
+                <div class="dropdown-control">
+                  <select onchange="updateWeatherUnit(this.value)">
+                    <option value="celsius">Celsius (°C)</option>
+                    <option value="fahrenheit">Fahrenheit (°F)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'schedule':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.reminders') || 'Reminders'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.reminderTime') || 'Reminder'}</span>
+                <div class="dropdown-control">
+                  <select onchange="updateScheduleReminder(this.value)">
+                    <option value="5">5 min before</option>
+                    <option value="10">10 min before</option>
+                    <option value="15">15 min before</option>
+                    <option value="30">30 min before</option>
+                    <option value="60">1 hour before</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'notes':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.appearance') || 'Appearance'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.fontSize') || 'Font Size'}</span>
+                <div class="dropdown-control">
+                  <select onchange="updateNotesFontSize(this.value)">
+                    <option value="12">Small (12px)</option>
+                    <option value="14">Medium (14px)</option>
+                    <option value="16">Large (16px)</option>
+                    <option value="18">Extra Large (18px)</option>
+                  </select>
+                </div>
+              </div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.defaultNoteColor') || 'Color'}</span>
+                <div class="dropdown-control">
+                  <input type="color" value="#ffffff" onchange="updateNotesColor(this.value)">
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'pomodoro':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.timer') || 'Timer'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.workDuration') || 'Work (min)'}</span>
+                <div class="dropdown-control">
+                  <input type="number" value="25" min="1" max="60" onchange="updatePomodoroWork(this.value)">
+                </div>
+              </div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.shortBreak') || 'Break (min)'}</span>
+                <div class="dropdown-control">
+                  <input type="number" value="5" min="1" max="30" onchange="updatePomodoroShortBreak(this.value)">
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'quickTools':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.visibleTools') || 'Visible Tools'}</div>
+              <div class="dropdown-toggle-row">
+                <span class="dropdown-label">Screenshot</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="updateQuickTool('screenshot', this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="dropdown-toggle-row">
+                <span class="dropdown-label">Files</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="updateQuickTool('files', this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="dropdown-toggle-row">
+                <span class="dropdown-label">Calculator</span>
+                <label class="switch">
+                  <input type="checkbox" checked onchange="updateQuickTool('calculator', this.checked)">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+          `;
+          break;
+          
+        case 'chatAI':
+          settingsHtml = `
+            <div class="dropdown-section">
+              <div class="dropdown-section-title">${tWidget('widgetWindow.aiModel') || 'AI Model'}</div>
+              <div class="dropdown-row">
+                <span class="dropdown-label">${tWidget('widgetWindow.selectModel') || 'Model'}</span>
+                <div class="dropdown-control">
+                  <select onchange="updateChatAIModel(this.value)">
+                    <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                    <option value="gpt-4">GPT-4</option>
+                    <option value="claude">Claude</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+          `;
+          break;
+      }
+      
+      // Add common settings
+      settingsHtml += `
+        <div class="dropdown-section">
+          <div class="dropdown-section-title">${tWidget('widgetWindow.common') || 'Common'}</div>
+          <div class="dropdown-row">
+            <span class="dropdown-label">${tWidget('widgetWindow.context.transparency') || 'Transparency'}</span>
+            <div class="dropdown-control">
+              <input type="range" min="0" max="100" value="85" oninput="updateWidgetTransparency(this.value)">
+            </div>
+          </div>
+        </div>
+        <div class="dropdown-section">
+          <div class="dropdown-section-title">${tWidget('widgetWindow.color') || 'Color'}</div>
+          <div class="dropdown-color-grid">
+            ${widgetColors.map(c => `
+              <div class="dropdown-color-option"
+                   style="--color: ${c};"
+                   onclick="setWidgetColor('${c}'); document.querySelectorAll('.dropdown-color-option').forEach(el => el.classList.remove('active')); this.classList.add('active');"></div>
+            `).join('')}
+          </div>
+        </div>
+      `;
+      
+      dropdownContent.innerHTML = settingsHtml;
+    }
+
+    // Toggle settings dropdown
+    window.toggleSettingsDropdown = () => {
+      const panel = document.getElementById('settingsDropdown');
+      console.log('toggleSettingsDropdown called, panel:', panel);
+      if (panel) {
+        panel.classList.toggle('open');
+        console.log('Panel classList:', panel.classList);
+      } else {
+        console.error('settingsDropdown element not found!');
+      }
+    };
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      const panel = document.getElementById('settingsDropdown');
+      const btn = e.target.closest('[onclick="toggleSettingsDropdown()"]');
+      if (panel && !panel.contains(e.target) && !btn) {
+        panel.classList.remove('open');
+      }
+    });
+
+    // Make all update functions global
+    window.updateClockStyle = (value) => {
+      console.log('Update clock style:', value);
+      loadWidgetContent('clock');
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { style: value });
+      }
+    };
+
+    window.updateClockSeconds = (show) => {
+      console.log('Update clock seconds:', show);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { showSeconds: show });
+      }
+    };
+
+    window.updateClockDate = (show) => {
+      console.log('Update clock date:', show);
+      const dateEl = document.querySelector('.clock-date');
+      if (dateEl) dateEl.style.display = show ? 'block' : 'none';
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { showDate: show });
+      }
+    };
+
+    window.updateWeatherLocation = (value) => {
+      console.log('Update weather location:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { location: value });
+      }
+    };
+
+    window.updateWeatherUnit = (value) => {
+      console.log('Update weather unit:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { unit: value });
+      }
+    };
+
+    window.updateScheduleReminder = (value) => {
+      console.log('Update schedule reminder:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { reminderTime: value });
+      }
+    };
+
+    window.updateNotesFontSize = (value) => {
+      console.log('Update notes font size:', value);
+      const textarea = document.querySelector('.note-item textarea');
+      if (textarea) textarea.style.fontSize = value + 'px';
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { fontSize: value });
+      }
+    };
+
+    window.updateNotesColor = (value) => {
+      console.log('Update notes color:', value);
+      const textarea = document.querySelector('.note-item textarea');
+      if (textarea) textarea.style.color = value;
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { noteColor: value });
+      }
+    };
+
+    window.updatePomodoroWork = (value) => {
+      console.log('Update pomodoro work:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { workDuration: parseInt(value) });
+      }
+    };
+
+    window.updatePomodoroShortBreak = (value) => {
+      console.log('Update pomodoro short break:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { shortBreak: parseInt(value) });
+      }
+    };
+
+    window.updateQuickTool = (tool, visible) => {
+      console.log('Update quick tool:', tool, visible);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { ['show' + tool.charAt(0).toUpperCase() + tool.slice(1)]: visible });
+      }
+    };
+
+    window.updateChatAIModel = (value) => {
+      console.log('Update chat AI model:', value);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { model: value });
+      }
+    };
+
+    // Toggle settings panel functions
+
+    // Clock functions
+    function updateClock() {
+      const now = new Date();
+      const locale = savedLang === 'ru' ? 'ru-RU' : 'en-US';
+      const timeStr = now.toLocaleTimeString(locale, { hour12: false });
+      const dateStr = now.toLocaleDateString(locale, { weekday: 'long', month: 'long', day: 'numeric' });
+      
+      const timeEl = document.getElementById('clockTime');
+      const dateEl = document.getElementById('clockDate');
+      
+      if (timeEl) timeEl.textContent = timeStr;
+      if (dateEl) dateEl.textContent = dateStr;
+    }
+
+    // Pomodoro functions
+    let pomodoroInterval = null;
+    let pomodoroTime = 25 * 60;
+    let pomodoroRunning = false;
+
+    function togglePomodoro() {
+      const btn = document.querySelector('.pomodoro-btn.start');
+      const status = document.getElementById('pomodoroStatus');
+      
+      if (pomodoroRunning) {
+        clearInterval(pomodoroInterval);
+        pomodoroRunning = false;
+        btn.textContent = tWidget('widgetWindow.pomodoro.start');
+        btn.classList.remove('pause');
+        status.textContent = tWidget('widgetWindow.pomodoro.paused');
+      } else {
+        pomodoroRunning = true;
+        btn.textContent = tWidget('widgetWindow.pomodoro.pause');
+        btn.classList.add('pause');
+        status.textContent = tWidget('widgetWindow.pomodoro.focusing');
+        
+        pomodoroInterval = setInterval(() => {
+          pomodoroTime--;
+          
+          const minutes = Math.floor(pomodoroTime / 60);
+          const seconds = pomodoroTime % 60;
+          
+          const timerEl = document.getElementById('pomodoroTimer');
+          if (timerEl) {
+            timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+          }
+          
+          if (pomodoroTime <= 0) {
+            clearInterval(pomodoroInterval);
+            pomodoroRunning = false;
+            status.textContent = tWidget('widgetWindow.pomodoro.breakTime');
+            btn.textContent = tWidget('widgetWindow.pomodoro.start');
+            btn.classList.remove('pause');
+          }
+        }, 1000);
+      }
+    }
+
+    function resetPomodoro() {
+      clearInterval(pomodoroInterval);
+      pomodoroRunning = false;
+      pomodoroTime = 25 * 60;
+      
+      const timerEl = document.getElementById('pomodoroTimer');
+      const statusEl = document.getElementById('pomodoroStatus');
+      const btn = document.querySelector('.pomodoro-btn.start');
+      
+      if (timerEl) timerEl.textContent = '25:00';
+      if (statusEl) statusEl.textContent = tWidget('widgetWindow.pomodoro.ready');
+      if (btn) {
+        btn.textContent = tWidget('widgetWindow.pomodoro.start');
+        btn.classList.remove('pause');
+      }
+    }
+
+    // Quick tools function
+    function quickAction(action) {
+      console.log('Quick Action:', action);
+      
+      if (window.electronAPI) {
+        switch(action) {
+          case 'screenshot':
+            console.log('Taking screenshot...');
+            window.electronAPI.takeScreenshot()
+              .then(result => {
+                if (result.success) {
+                  console.log('Screenshot saved:', result.path);
+                } else {
+                  console.error('Screenshot failed:', result.error);
+                }
+              })
+              .catch(err => console.error('Screenshot error:', err));
+            break;
+            
+          case 'files':
+            console.log('Opening File Explorer...');
+            window.electronAPI.openFileExplorer()
+              .then(result => {
+                if (!result.success) {
+                  console.error('Failed to open explorer:', result.error);
+                }
+              })
+              .catch(err => console.error('Explorer error:', err));
+            break;
+            
+          case 'settings':
+            console.log('Opening Settings...');
+            window.electronAPI.navigateToSettings();
+            break;
+            
+          case 'calculator':
+            console.log('Opening Calculator...');
+            window.electronAPI.openCalculator()
+              .then(result => {
+                if (!result.success) {
+                  console.error('Failed to open calculator:', result.error);
+                }
+              })
+              .catch(err => console.error('Calculator error:', err));
+            break;
+            
+          case 'ai':
+            console.log('Opening AI Assistant...');
+            window.electronAPI.openAiAssistant()
+              .then(result => {
+                if (!result.success) {
+                  console.error('Failed to open AI assistant:', result.error);
+                }
+              })
+              .catch(err => console.error('AI Assistant error:', err));
+            break;
+            
+          case 'calendar':
+            console.log('Opening Calendar...');
+            window.electronAPI.openCalendar()
+              .then(result => {
+                if (!result.success) {
+                  console.error('Failed to open calendar:', result.error);
+                }
+              })
+              .catch(err => console.error('Calendar error:', err));
+            break;
+            
+          default:
+            console.log('Unknown action:', action);
+        }
+      } else {
+        console.error('electronAPI not available');
+      }
+      
+      // Показываем уведомление только для отладки
+      const actionLabels = {
+        screenshot: tWidget('widgetWindow.quickTools.screenshot'),
+        files: tWidget('widgetWindow.quickTools.files'),
+        settings: tWidget('widgetWindow.quickTools.settings'),
+        calculator: tWidget('widgetWindow.quickTools.calc'),
+        ai: tWidget('widgetWindow.quickTools.ai'),
+        calendar: tWidget('widgetWindow.quickTools.calendar')
+      };
+      const actionLabel = actionLabels[action] || action;
+      console.log('Action executed:', actionLabel);
+    }
+
+    // Chat functions
+    function handleChatKeydown(event) {
+      if (event.key === 'Enter') {
+        sendChatMessage();
+      }
+    }
+
+    // AI state
+    let aiSessionId = 'chat-ai-' + widgetId;
+    let aiProvider = 'openai';
+    let isWaitingForAI = false;
+
+    async function sendChatMessage() {
+      const input = document.getElementById('chatInput');
+      const messages = document.getElementById('chatMessages');
+
+      if (!input || !messages) return;
+
+      const message = input.value.trim();
+      if (!message) return;
+
+      // Add user message
+      const userMsg = document.createElement('div');
+      userMsg.className = 'chat-message user';
+      userMsg.textContent = message;
+      messages.appendChild(userMsg);
+
+      input.value = '';
+      messages.scrollTop = messages.scrollHeight;
+
+      // Show loading indicator
+      isWaitingForAI = true;
+      const loadingMsg = document.createElement('div');
+      loadingMsg.className = 'chat-message ai';
+      loadingMsg.innerHTML = `<em>${tWidget('widgetWindow.chat.thinking')}</em>`;
+      loadingMsg.id = 'loadingMessage';
+      messages.appendChild(loadingMsg);
+
+      try {
+        // Check if API key is set
+        const keyStatus = await window.electronAPI.getAIApiKeyStatus(aiProvider);
+        
+        if (!keyStatus.hasKey) {
+          // No API key - show demo response
+          setTimeout(() => {
+            const loadingEl = document.getElementById('loadingMessage');
+            if (loadingEl) loadingEl.remove();
+            
+            const aiMsg = document.createElement('div');
+            aiMsg.className = 'chat-message ai';
+            aiMsg.innerHTML = `<strong>${tWidget('widgetWindow.chat.noKeyTitle')}</strong><br><br>` +
+              `${tWidget('widgetWindow.chat.noKeyDesc')}`;
+            messages.appendChild(aiMsg);
+            messages.scrollTop = messages.scrollHeight;
+            isWaitingForAI = false;
+          }, 500);
+          return;
+        }
+
+        // Send to AI API
+        const result = await window.electronAPI.chatWithAI(aiProvider, message, aiSessionId);
+
+        // Remove loading message
+        const loadingEl = document.getElementById('loadingMessage');
+        if (loadingEl) loadingEl.remove();
+
+        if (result.success) {
+          // Add AI response
+          const aiMsg = document.createElement('div');
+          aiMsg.className = 'chat-message ai';
+          aiMsg.textContent = result.content;
+          messages.appendChild(aiMsg);
+        } else {
+          // Show error
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'chat-message ai';
+          errorMsg.style.color = '#fca5a5';
+          errorMsg.textContent = tWidget('widgetWindow.chat.errorPrefix') + (result.error || tWidget('widgetWindow.chat.errorFallback'));
+          messages.appendChild(errorMsg);
+        }
+      } catch (error) {
+        // Remove loading message
+        const loadingEl = document.getElementById('loadingMessage');
+        if (loadingEl) loadingEl.remove();
+
+        // Show error
+        const errorMsg = document.createElement('div');
+        errorMsg.className = 'chat-message ai';
+        errorMsg.style.color = '#fca5a5';
+        errorMsg.textContent = tWidget('widgetWindow.chat.errorPrefix') + error.message;
+        messages.appendChild(errorMsg);
+      }
+
+      messages.scrollTop = messages.scrollHeight;
+      isWaitingForAI = false;
+    }
+
+    // Widget controls
+    function refreshWidget() {
+      loadWidgetContent(widgetType);
+    }
+
+    function openWidgetSettings() {
+      if (window.electronAPI) {
+        window.electronAPI.openWidgetSettings(widgetType);
+      }
+    }
+
+    function closeWidget() {
+      if (window.electronAPI) {
+        window.electronAPI.closeWidget(widgetId);
+      }
+    }
+
+    // ========================================
+    // Context Menu for Widgets
+    // ========================================
+    
+    let contextMenuOpen = false;
+    const widgetColors = ['#ef4444', '#f97316', '#f59e0b', '#84cc16', '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e'];
+    
+    // Show context menu on right-click
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      showWidgetContextMenu(e.clientX, e.clientY);
+    });
+    
+    // Close context menu on click elsewhere
+    document.addEventListener('click', (e) => {
+      const menu = document.querySelector('.widget-context-menu');
+      if (menu && !menu.contains(e.target)) {
+        hideWidgetContextMenu();
+      }
+    });
+    
+    function showWidgetContextMenu(x, y) {
+      hideWidgetContextMenu();
+      contextMenuOpen = true;
+
+      const menu = document.createElement('div');
+      menu.className = 'widget-context-menu';
+      menu.style.left = `${x}px`;
+      menu.style.top = `${y}px`;
+
+      // Widget-specific settings HTML
+      let widgetSpecificSettings = '';
+      
+      switch(widgetType) {
+        case 'clock':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.clock')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.clockStyle') || 'Clock Style'}:</label>
+              <select id="clockStyleSelect" onchange="updateClockStyle(this.value)" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="digital">Digital</option>
+                <option value="analog">Analog</option>
+              </select>
+            </div>
+            <div class="setting-item toggle" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+              <label style="font-size: 12px; color: rgba(255,255,255,0.8);">${tWidget('widgetWindow.showSeconds') || 'Show Seconds'}</label>
+              <label class="switch">
+                <input type="checkbox" id="clockSecondsToggle" onchange="updateClockSeconds(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item toggle" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+              <label style="font-size: 12px; color: rgba(255,255,255,0.8);">${tWidget('widgetWindow.showDate') || 'Show Date'}</label>
+              <label class="switch">
+                <input type="checkbox" id="clockDateToggle" checked onchange="updateClockDate(this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          `;
+          break;
+          
+        case 'weather':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.weather')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.location') || 'Location'}:</label>
+              <input type="text" id="weatherLocationInput" placeholder="${tWidget('widgetWindow.enterCityName') || 'Enter city name'}" 
+                style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);"
+                onchange="updateWeatherLocation(this.value)">
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.temperatureUnit') || 'Temperature Unit'}:</label>
+              <select id="weatherUnitSelect" onchange="updateWeatherUnit(this.value)" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="celsius">Celsius (°C)</option>
+                <option value="fahrenheit">Fahrenheit (°F)</option>
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'schedule':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.schedule')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.reminderTime') || 'Reminder Time'}:</label>
+              <select id="scheduleReminderSelect" onchange="updateScheduleReminder(this.value)" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="5">5 minutes before</option>
+                <option value="10">10 minutes before</option>
+                <option value="15">15 minutes before</option>
+                <option value="30">30 minutes before</option>
+                <option value="60">1 hour before</option>
+              </select>
+            </div>
+          `;
+          break;
+          
+        case 'notes':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.notes')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.fontSize') || 'Font Size'}:</label>
+              <select id="notesFontSizeSelect" onchange="updateNotesFontSize(this.value)" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="12">Small (12px)</option>
+                <option value="14" selected>Medium (14px)</option>
+                <option value="16">Large (16px)</option>
+                <option value="18">Extra Large (18px)</option>
+              </select>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.defaultNoteColor') || 'Note Color'}:</label>
+              <input type="color" id="notesColorInput" value="#ffffff" onchange="updateNotesColor(this.value)" 
+                style="width: 100%; height: 30px; border: none; border-radius: 4px; cursor: pointer;">
+            </div>
+          `;
+          break;
+          
+        case 'pomodoro':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.pomodoro')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.workDuration') || 'Work Duration (min)'}:</label>
+              <input type="number" id="pomodoroWorkInput" value="25" min="1" max="60" onchange="updatePomodoroWork(this.value)"
+                style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.shortBreak') || 'Short Break (min)'}:</label>
+              <input type="number" id="pomodoroShortBreakInput" value="5" min="1" max="30" onchange="updatePomodoroShortBreak(this.value)"
+                style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+            </div>
+          `;
+          break;
+          
+        case 'quickTools':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.quickTools')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="setting-item toggle" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+              <label style="font-size: 12px; color: rgba(255,255,255,0.8);">Screenshot</label>
+              <label class="switch">
+                <input type="checkbox" checked onchange="updateQuickTool('screenshot', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item toggle" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+              <label style="font-size: 12px; color: rgba(255,255,255,0.8);">Files</label>
+              <label class="switch">
+                <input type="checkbox" checked onchange="updateQuickTool('files', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+            <div class="setting-item toggle" style="display: flex; justify-content: space-between; align-items: center; padding: 8px 12px;">
+              <label style="font-size: 12px; color: rgba(255,255,255,0.8);">Calculator</label>
+              <label class="switch">
+                <input type="checkbox" checked onchange="updateQuickTool('calculator', this.checked)">
+                <span class="slider"></span>
+              </label>
+            </div>
+          `;
+          break;
+          
+        case 'chatAI':
+          widgetSpecificSettings = `
+            <div class="widget-context-menu-divider"></div>
+            <div class="widget-context-menu-header">
+              <h4>${tWidget('widgetWindow.titles.chatAI')} - ${tWidget('widgetWindow.context.settings')}</h4>
+            </div>
+            <div class="widget-context-menu-slider">
+              <label>${tWidget('widgetWindow.aiModel') || 'AI Model'}:</label>
+              <select id="chatAIModelSelect" onchange="updateChatAIModel(this.value)" style="width: 100%; padding: 6px; border-radius: 4px; background: rgba(255,255,255,0.1); color: white; border: 1px solid rgba(255,255,255,0.2);">
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                <option value="gpt-4">GPT-4</option>
+                <option value="claude">Claude</option>
+              </select>
+            </div>
+          `;
+          break;
+      }
+
+      menu.innerHTML = `
+        <div class="widget-context-menu-header">
+          <h4>${widgetTitles[widgetType] || tWidget('widgetWindow.defaultTitle', {}, 'Widget')}</h4>
+          <p>${tWidget('widgetWindow.context.settingsTitle')}</p>
+        </div>
+
+        <div class="widget-context-menu-slider">
+          <label>${tWidget('widgetWindow.context.transparency')}: <span id="transparencyValue">85</span>%</label>
+          <input type="range" min="0" max="100" value="85" oninput="updateWidgetTransparency(this.value)">
+        </div>
+
+        <div class="widget-color-picker">
+          ${widgetColors.map(c => `
+            <div class="widget-color-option"
+                 style="background-color: ${c};"
+                 onclick="setWidgetColor('${c}')"></div>
+          `).join('')}
+        </div>
+
+        ${widgetSpecificSettings}
+
+        <div class="widget-context-menu-divider"></div>
+
+        <button class="widget-context-menu-item" onclick="refreshWidget()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M23 4v6h-6"/><path d="M1 20v-6h6"/>
+            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+          </svg>
+          <span>${tWidget('widgetWindow.context.refresh')}</span>
+        </button>
+
+        <button class="widget-context-menu-item" onclick="openWidgetSettingsInMain()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6"/>
+          </svg>
+          <span>${tWidget('widgetWindow.context.fullSettings') || 'Full Settings'}</span>
+        </button>
+
+        <div class="widget-context-menu-divider"></div>
+
+        <button class="widget-context-menu-item danger" onclick="closeWidget()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+          <span>${tWidget('widgetWindow.context.close')}</span>
+        </button>
+      `;
+
+      document.body.appendChild(menu);
+    }
+    
+    function hideWidgetContextMenu() {
+      const menu = document.querySelector('.widget-context-menu');
+      if (menu) {
+        menu.remove();
+      }
+      contextMenuOpen = false;
+    }
+    
+    window.updateWidgetTransparency = (value) => {
+      document.getElementById('transparencyValue').textContent = value;
+      const widgetContainer = document.getElementById('widgetContainer');
+      const transparency = value / 100;
+      widgetContainer.style.background = `rgba(37, 42, 61, ${transparency})`;
+      
+      // Save settings
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, {
+          transparency: parseInt(value)
+        });
+      }
+    };
+    
+    window.setWidgetColor = (color) => {
+      const widgetContainer = document.getElementById('widgetContainer');
+      // Добавляем цветную границу
+      widgetContainer.style.borderColor = color;
+      widgetContainer.style.boxShadow = `0 8px 32px ${color}40`;
+
+      // Обновляем активный цвет в меню
+      document.querySelectorAll('.widget-color-option').forEach(opt => {
+        opt.classList.toggle('active', opt.style.backgroundColor === color);
+      });
+    };
+
+    // Clock settings
+    window.updateClockStyle = (style) => {
+      console.log('Update clock style:', style);
+      loadWidgetContent('clock');
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { style });
+      }
+    };
+
+    window.updateClockSeconds = (show) => {
+      console.log('Update clock seconds:', show);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { showSeconds: show });
+      }
+    };
+
+    window.updateClockDate = (show) => {
+      console.log('Update clock date:', show);
+      const dateEl = document.querySelector('.clock-date');
+      if (dateEl) dateEl.style.display = show ? 'block' : 'none';
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { showDate: show });
+      }
+    };
+
+    // Weather settings
+    window.updateWeatherLocation = (location) => {
+      console.log('Update weather location:', location);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { location });
+      }
+    };
+
+    window.updateWeatherUnit = (unit) => {
+      console.log('Update weather unit:', unit);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { unit });
+      }
+    };
+
+    // Schedule settings
+    window.updateScheduleReminder = (time) => {
+      console.log('Update schedule reminder:', time);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { reminderTime: time });
+      }
+    };
+
+    // Notes settings
+    window.updateNotesFontSize = (size) => {
+      console.log('Update notes font size:', size);
+      const textarea = document.querySelector('.note-item textarea');
+      if (textarea) textarea.style.fontSize = size + 'px';
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { fontSize: size });
+      }
+    };
+
+    window.updateNotesColor = (color) => {
+      console.log('Update notes color:', color);
+      const textarea = document.querySelector('.note-item textarea');
+      if (textarea) textarea.style.color = color;
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { noteColor: color });
+      }
+    };
+
+    // Pomodoro settings
+    window.updatePomodoroWork = (duration) => {
+      console.log('Update pomodoro work duration:', duration);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { workDuration: parseInt(duration) });
+      }
+    };
+
+    window.updatePomodoroShortBreak = (duration) => {
+      console.log('Update pomodoro short break:', duration);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { shortBreak: parseInt(duration) });
+      }
+    };
+
+    // Quick Tools settings
+    window.updateQuickTool = (tool, visible) => {
+      console.log('Update quick tool:', tool, visible);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { ['show' + tool.charAt(0).toUpperCase() + tool.slice(1)]: visible });
+      }
+    };
+
+    // Chat AI settings
+    window.updateChatAIModel = (model) => {
+      console.log('Update chat AI model:', model);
+      if (window.electronAPI) {
+        window.electronAPI.updateWidgetSettings && window.electronAPI.updateWidgetSettings(widgetId, { model });
+      }
+    };
+
+    // Open full settings in main window
+    window.openWidgetSettingsInMain = () => {
+      if (window.electronAPI) {
+        window.electronAPI.openWidgetSettings(widgetType);
+      }
+    };
+
+    // Apply global widget settings
+    function applyGlobalSettings(settings) {
+      const widgetContainer = document.getElementById('widgetContainer');
+      const widgetContent = document.getElementById('widgetContent');
+      if (!widgetContainer) return;
+
+      console.log('Applying settings:', settings);
+
+      // Transparency (0-100 -> 0.0-1.0)
+      const transparency = (settings.transparency !== undefined ? settings.transparency : 85) / 100;
+      // Изменяем alpha канал в background
+      widgetContainer.style.background = `rgba(37, 42, 61, ${transparency})`;
+      console.log('Setting transparency:', transparency, '(from settings:', settings.transparency, ')');
+
+      // Blur effect
+      if (settings.blurEffect === false) {
+        widgetContainer.style.backdropFilter = 'none';
+      } else {
+        widgetContainer.style.backdropFilter = 'blur(15px)';
+      }
+
+      // Animation
+      if (settings.animationEnabled === false) {
+        widgetContainer.style.transition = 'none';
+        if (widgetContent) widgetContent.style.transition = 'none';
+      } else {
+        widgetContainer.style.transition = 'all 0.3s';
+        if (widgetContent) widgetContent.style.transition = 'all 0.3s';
+      }
+
+      // Scale - изменяем размеры контейнера и шрифты
+      if (settings.scale !== undefined) {
+        const scale = settings.scale / 100;
+        
+        // Новые размеры
+        const newWidth = Math.round(baseWidth * scale);
+        const newHeight = Math.round(baseHeight * scale);
+        
+        console.log('Scaling to:', newWidth, 'x', newHeight, '(scale:', scale, ')');
+        
+        // Применяем новые размеры к окну
+        window.electronAPI.updateWidgetSize && window.electronAPI.updateWidgetSize(newWidth, newHeight);
+        
+        // Масштабируем шрифты внутри виджета
+        if (widgetContent) {
+          widgetContent.style.fontSize = `${14 * scale}px`;
+          
+          // Масштабируем заголовки
+          const titleEl = widgetContainer.querySelector('.widget-title');
+          if (titleEl) {
+            titleEl.style.fontSize = `${13 * scale}px`;
+          }
+          
+          // Масштабируем специфичные элементы
+          const clockTime = document.getElementById('clockTime');
+          if (clockTime) clockTime.style.fontSize = `${42 * scale}px`;
+          
+          const clockDate = document.getElementById('clockDate');
+          if (clockDate) clockDate.style.fontSize = `${14 * scale}px`;
+          
+          const weatherTemp = document.querySelector('.weather-temp');
+          if (weatherTemp) weatherTemp.style.fontSize = `${32 * scale}px`;
+          
+          const pomodoroTimer = document.getElementById('pomodoroTimer');
+          if (pomodoroTimer) pomodoroTimer.style.fontSize = `${48 * scale}px`;
+        }
+      }
+    }
+
+    // Load and apply global settings on startup
+    async function initWidgetSettings() {
+      if (window.electronAPI) {
+        try {
+          const settings = await window.electronAPI.getGlobalWidgetSettings();
+          
+          // Сначала применяем прозрачность сразу
+          if (settings.transparency !== undefined) {
+            const transparency = settings.transparency / 100;
+            const widgetContainer = document.getElementById('widgetContainer');
+            if (widgetContainer) {
+              widgetContainer.style.background = `rgba(37, 42, 61, ${transparency})`;
+            }
+          }
+          
+          // Затем применяем все остальные настройки
+          applyGlobalSettings(settings);
+        } catch (error) {
+          console.error('Error loading widget settings:', error);
+        }
+      }
+    }
+
+    // Listen for global settings changes
+    if (window.electronAPI) {
+      window.electronAPI.onGlobalSettingsChanged((settings) => {
+        applyGlobalSettings(settings);
+      });
+
+      // Listen for language changes
+      window.electronAPI.onLanguageChanged((lang) => {
+        console.log('Widget language changed to:', lang);
+        // Для виджетов можно обновить заголовок если нужно
+        const widgetTitle = document.getElementById('widgetTitle');
+        if (widgetTitle) {
+          // Перевод названий виджетов
+          const titles = {
+            clock: { en: 'Clock', ru: 'Часы' },
+            weather: { en: 'Weather', ru: 'Погода' },
+            schedule: { en: 'Schedule', ru: 'Расписание' },
+            notes: { en: 'iNotes', ru: 'iЗаметки' },
+            pomodoro: { en: 'iPomodoro', ru: 'iПомодоро' },
+            quickTools: { en: 'Quick Tools', ru: 'Инструменты' },
+            chatAI: { en: 'Chat AI', ru: 'Chat AI' }
+          };
+          const type = new URLSearchParams(window.location.search).get('type');
+          if (type && titles[type]) {
+            widgetTitle.textContent = titles[type][lang] || titles[type].en;
+          }
+        }
+      });
+    }
+
+    // Initialize settings
+    initWidgetSettings();
+
+    // Make draggable
+    const widgetContainer = document.getElementById('widgetContainer');
+    const widgetHeader = document.querySelector('.widget-header');
+    
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+    
+    widgetHeader.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+      
+      const rect = widgetContainer.getBoundingClientRect();
+      initialX = rect.left;
+      initialY = rect.top;
+      
+      e.preventDefault();
+    });
+    
+    document.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      
+      widgetContainer.style.left = `${initialX + dx}px`;
+      widgetContainer.style.top = `${initialY + dy}px`;
+      widgetContainer.style.right = 'auto';
+      widgetContainer.style.bottom = 'auto';
+    });
+    
+    document.addEventListener('mouseup', () => {
+      isDragging = false;
+    });
+  </script>
+</body>
+</html>

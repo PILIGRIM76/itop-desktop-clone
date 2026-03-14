@@ -1,0 +1,16 @@
+{
+  "name": "itop-telegram-bot",
+  "version": "1.0.0",
+  "description": "Telegram Bot for iTop Easy Desktop Admin",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "node --watch index.js"
+  },
+  "dependencies": {
+    "node-telegram-bot-api": "^0.61.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "dotenv": "^16.3.1"
+  }
+}

@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Setup Guide</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      min-height: 100vh;
+      padding: 40px 20px;
+      color: white;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header p {
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 16px;
+    }
+
+    .step {
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(20px);
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .step-number {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .step-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .step-content {
+      color: rgba(255, 255, 255, 0.8);
+      line-height: 1.6;
+    }
+
+    .step-content ol, .step-content ul {
+      margin-left: 24px;
+      margin-top: 12px;
+    }
+
+    .step-content li {
+      margin-bottom: 8px;
+    }
+
+    .code-block {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .code-block .comment {
+      color: #6b7280;
+    }
+
+    .code-block .string {
+      color: #10b981;
+    }
+
+    .code-block .keyword {
+      color: #8b5cf6;
+    }
+
+    .button {
+      display: inline-block;
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+      text-decoration: none;
+      border-radius: 10px;
+      font-weight: 600;
+      transition: all 0.3s;
+      border: none;
+      cursor: pointer;
+      margin-top: 16px;
+    }
+
+    .button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(139, 92, 246, 0.4);
+    }
+
+    .button.secondary {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .button.secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .checklist {
+      list-style: none;
+      margin-top: 16px;
+    }
+
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 0;
+    }
+
+    .checklist li::before {
+      content: '☐';
+      font-size: 20px;
+      color: #8b5cf6;
+    }
+
+    .checklist li.done::before {
+      content: '✓';
+      color: #10b981;
+    }
+
+    .warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      color: #fbbf24;
+      font-size: 13px;
+    }
+
+    .success {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      border-radius: 8px;
+      padding: 12px 16px;
+      margin-top: 12px;
+      color: #6ee7b7;
+      font-size: 13px;
+    }
+
+    .links {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .link-card {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 16px;
+      text-decoration: none;
+      color: white;
+      transition: all 0.3s;
+    }
+
+    .link-card:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(139, 92, 246, 0.5);
+      transform: translateY(-2px);
+    }
+
+    .link-card h4 {
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .link-card p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .config-form {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 12px;
+    }
+
+    .config-form label {
+      display: block;
+      font-size: 13px;
+      color: rgba(255, 255, 255, 0.7);
+      margin-bottom: 6px;
+      margin-top: 12px;
+    }
+
+    .config-form input {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 6px;
+      color: white;
+      font-size: 13px;
+    }
+
+    .config-form input:focus {
+      outline: none;
+      border-color: rgba(139, 92, 246, 0.5);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔐 Supabase Setup Guide</h1>
+      <p>Настройка системы аккаунтов за 10 минут</p>
+    </div>
+
+    <!-- Шаг 1 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <div class="step-title">Создайте проект Supabase</div>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>Перейдите на <a href="https://supabase.com" target="_blank" style="color: #8b5cf6;">supabase.com</a></li>
+          <li>Нажмите <strong>"Start your project"</strong></li>
+          <li>Войдите через GitHub или создайте аккаунт</li>
+          <li>Заполните форму создания проекта:
+            <ul>
+              <li><strong>Name:</strong> itop-desktop-clone</li>
+              <li><strong>Database Password:</strong> [Запомните этот пароль!]</li>
+              <li><strong>Region:</strong> Выберите ближайший к вам</li>
+            </ul>
+          </li>
+          <li>Нажмите <strong>"Create new project"</strong></li>
+        </ol>
+        <div class="warning">
+          ⏱ Проект создаётся 2-5 минут. Дождитесь завершения!
+        </div>
+      </div>
+    </div>
+
+    <!-- Шаг 2 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <div class="step-title">Получите API ключи</div>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>В проекте перейдите в <strong>Settings</strong> (шестерёнка внизу слева)</li>
+          <li>Выберите <strong>API</strong></li>
+          <li>Скопируйте два значения:
+            <ul>
+              <li><strong>Project URL:</strong> https://xxxxx.supabase.co</li>
+              <li><strong>anon/public key:</strong> eyJhbGc... (длинная строка)</li>
+            </ul>
+          </li>
+        </ol>
+
+        <div class="config-form">
+          <label>Project URL:</label>
+          <input type="text" id="supabaseUrl" placeholder="https://xxxxx.supabase.co">
+          
+          <label>anon key:</label>
+          <input type="text" id="supabaseKey" placeholder="eyJhbGc...">
+          
+          <button class="button" onclick="saveConfig()" style="margin-top: 16px;">💾 Сохранить в файл</button>
+        </div>
+
+        <div class="success" id="saveSuccess" style="display: none;">
+          ✅ Конфигурация сохранена в supabase-client.js
+        </div>
+      </div>
+    </div>
+
+    <!-- Шаг 3 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <div class="step-title">Создайте таблицы базы данных</div>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>В Supabase перейдите в <strong>SQL Editor</strong> (в левой панели)</li>
+          <li>Нажмите <strong>"New query"</strong></li>
+          <li>Скопируйте и выполните следующий SQL скрипт:</li>
+        </ol>
+
+        <div class="code-block">
+<span class="comment">-- Таблица профилей пользователей</span>
+<span class="keyword">create table</span> profiles (
+  id uuid <span class="keyword">references</span> auth.users <span class="keyword">on delete cascade</span> <span class="keyword">primary key</span>,
+  email text <span class="keyword">unique not null</span>,
+  full_name text,
+  avatar_url text,
+  account_type text <span class="keyword">default</span> <span class="string">'free'</span> <span class="keyword">check</span> (account_type <span class="keyword">in</span> (<span class="string">'free'</span>, <span class="string">'pro'</span>)),
+  license_key text <span class="keyword">unique</span>,
+  license_expires_at timestamptz,
+  created_at timestamptz <span class="keyword">default now()</span>,
+  updated_at timestamptz <span class="keyword">default now()</span>
+);
+
+<span class="comment">-- Таблица приватных боксов</span>
+<span class="keyword">create table</span> private_boxes (
+  id uuid <span class="keyword">default</span> uuid_generate_v4() <span class="keyword">primary key</span>,
+  user_id uuid <span class="keyword">references</span> profiles(id) <span class="keyword">on delete cascade not null</span>,
+  name text <span class="keyword">not null</span>,
+  password_hash text <span class="keyword">not null</span>,
+  recovery_email text,
+  encrypted_data jsonb,
+  created_at timestamptz <span class="keyword">default now()</span>,
+  updated_at timestamptz <span class="keyword">default now()</span>,
+  <span class="keyword">unique</span>(user_id)
+);
+
+<span class="comment">-- Таблица снимков рабочего стола</span>
+<span class="keyword">create table</span> desktop_snapshots (
+  id uuid <span class="keyword">default</span> uuid_generate_v4() <span class="keyword">primary key</span>,
+  user_id uuid <span class="keyword">references</span> profiles(id) <span class="keyword">on delete cascade not null</span>,
+  name text <span class="keyword">not null</span>,
+  description text,
+  snapshot_data jsonb <span class="keyword">not null</span>,
+  created_at timestamptz <span class="keyword">default now()</span>
+);
+
+<span class="comment">-- Таблица лицензионных ключей</span>
+<span class="keyword">create table</span> license_keys (
+  id uuid <span class="keyword">default</span> uuid_generate_v4() <span class="keyword">primary key</span>,
+  key text <span class="keyword">unique not null</span>,
+  type text <span class="keyword">default</span> <span class="string">'pro'</span> <span class="keyword">check</span> (type <span class="keyword">in</span> (<span class="string">'pro'</span>, <span class="string">'trial'</span>)),
+  duration_days <span class="keyword">integer default</span> <span class="number">365</span>,
+  is_used boolean <span class="keyword">default false</span>,
+  used_by uuid <span class="keyword">references</span> profiles(id),
+  created_at timestamptz <span class="keyword">default now()</span>,
+  activated_at timestamptz
+);
+        </div>
+
+        <button class="button" onclick="copySQL()">📋 Копировать SQL</button>
+      </div>
+    </div>
+
+    <!-- Шаг 4 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <div class="step-title">Настройте RLS (Row Level Security)</div>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>В том же <strong>SQL Editor</strong> выполните второй скрипт:</li>
+        </ol>
+
+        <div class="code-block">
+<span class="comment">-- Включить RLS для всех таблиц</span>
+<span class="keyword">alter table</span> profiles <span class="keyword">enable row level security</span>;
+<span class="keyword">alter table</span> private_boxes <span class="keyword">enable row level security</span>;
+<span class="keyword">alter table</span> desktop_snapshots <span class="keyword">enable row level security</span>;
+<span class="keyword">alter table</span> license_keys <span class="keyword">enable row level security</span>;
+
+<span class="comment">-- Policies для profiles</span>
+<span class="keyword">create policy</span> <span class="string">"Users can view own profile"</span> <span class="keyword">on</span> profiles <span class="keyword">for select</span> <span class="keyword">using</span> (auth.uid() = id);
+<span class="keyword">create policy</span> <span class="string">"Users can update own profile"</span> <span class="keyword">on</span> profiles <span class="keyword">for update</span> <span class="keyword">using</span> (auth.uid() = id);
+<span class="keyword">create policy</span> <span class="string">"Users can insert own profile"</span> <span class="keyword">on</span> profiles <span class="keyword">for insert</span> <span class="keyword">with check</span> (auth.uid() = id);
+
+<span class="comment">-- Policies для private_boxes</span>
+<span class="keyword">create policy</span> <span class="string">"Users can view own private box"</span> <span class="keyword">on</span> private_boxes <span class="keyword">for select</span> <span class="keyword">using</span> (auth.uid() = user_id);
+<span class="keyword">create policy</span> <span class="string">"Users can create own private box"</span> <span class="keyword">on</span> private_boxes <span class="keyword">for insert</span> <span class="keyword">with check</span> (auth.uid() = user_id);
+<span class="keyword">create policy</span> <span class="string">"Users can update own private box"</span> <span class="keyword">on</span> private_boxes <span class="keyword">for update</span> <span class="keyword">using</span> (auth.uid() = user_id);
+<span class="keyword">create policy</span> <span class="string">"Users can delete own private box"</span> <span class="keyword">on</span> private_boxes <span class="keyword">for delete</span> <span class="keyword">using</span> (auth.uid() = user_id);
+
+<span class="comment">-- Policies для desktop_snapshots</span>
+<span class="keyword">create policy</span> <span class="string">"Users can view own snapshots"</span> <span class="keyword">on</span> desktop_snapshots <span class="keyword">for select</span> <span class="keyword">using</span> (auth.uid() = user_id);
+<span class="keyword">create policy</span> <span class="string">"Users can manage own snapshots"</span> <span class="keyword">on</span> desktop_snapshots <span class="keyword">for all</span> <span class="keyword">using</span> (auth.uid() = user_id);
+
+<span class="comment">-- Policies для license_keys</span>
+<span class="keyword">create policy</span> <span class="string">"Users can view license keys"</span> <span class="keyword">on</span> license_keys <span class="keyword">for select</span> <span class="keyword">using</span> (<span class="keyword">true</span>);
+<span class="keyword">create policy</span> <span class="string">"Users can update used license keys"</span> <span class="keyword">on</span> license_keys <span class="keyword">for update</span> <span class="keyword">using</span> (<span class="keyword">true</span>);
+        </div>
+
+        <button class="button" onclick="copyRLS()">📋 Копировать RLS</button>
+      </div>
+    </div>
+
+    <!-- Шаг 5 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">5</div>
+        <div class="step-title">Создайте тестовый лицензионный ключ</div>
+      </div>
+      <div class="step-content">
+        <ol>
+          <li>В <strong>SQL Editor</strong> выполните:</li>
+        </ol>
+
+        <div class="code-block">
+<span class="comment">-- Создать Pro лицензию на 1 год</span>
+<span class="keyword">insert into</span> license_keys (key, type, duration_days)
+<span class="keyword">values</span> 
+  (<span class="string">'ITOP-PRO-ABCDE-12345-FGHIJ'</span>, <span class="string">'pro'</span>, <span class="number">365</span>),
+  (<span class="string">'ITOP-PRO-TEST11-11111-TEST1'</span>, <span class="string">'pro'</span>, <span class="number">365</span>),
+  (<span class="string">'ITOP-PRO-TRIAL-00001-TRIAL'</span>, <span class="string">'trial'</span>, <span class="number">14</span>);
+        </div>
+
+        <button class="button" onclick="copyLicense()">📋 Копировать</button>
+      </div>
+    </div>
+
+    <!-- Шаг 6 -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">6</div>
+        <div class="step-title">Проверка готовности</div>
+      </div>
+      <div class="step-content">
+        <p>Отметьте выполненные шаги:</p>
+        
+        <ul class="checklist" id="checklist">
+          <li onclick="toggleCheck(this)">Supabase проект создан</li>
+          <li onclick="toggleCheck(this)">API ключи скопированы</li>
+          <li onclick="toggleCheck(this)">Конфигурация сохранена в supabase-client.js</li>
+          <li onclick="toggleCheck(this)">Таблицы созданы (4 таблицы)</li>
+          <li onclick="toggleCheck(this)">RLS policies настроены</li>
+          <li onclick="toggleCheck(this)">Лицензионные ключи созданы</li>
+          <li onclick="toggleCheck(this)">Зависимости установлены (npm install)</li>
+        </ul>
+
+        <button class="button" onclick="testSetup()" style="margin-top: 20px;">🧪 Тестировать систему</button>
+      </div>
+    </div>
+
+    <!-- Полезные ссылки -->
+    <div class="step">
+      <div class="step-header">
+        <div class="step-number">7</div>
+        <div class="step-title">Полезные ссылки</div>
+      </div>
+      <div class="links">
+        <a href="https://supabase.com/dashboard" target="_blank" class="link-card">
+          <h4>📊 Supabase Dashboard</h4>
+          <p>Управление проектом</p>
+        </a>
+        <a href="https://supabase.com/docs/guides/auth" target="_blank" class="link-card">
+          <h4>📚 Auth Documentation</h4>
+          <p>Руководство по аутентификации</p>
+        </a>
+        <a href="https://itopsoftware.com/user-manual/ied/" target="_blank" class="link-card">
+          <h4>📖 iTop Manual</h4>
+          <p>Официальный мануал iTop</p>
+        </a>
+        <a href="file://F:\Kimi_Agent_Клон iTop Desktop\desktop-app\QUICK_START_ACCOUNTS.md" target="_blank" class="link-card">
+          <h4>🚀 Quick Start</h4>
+          <p>Быстрый старт (Markdown)</p>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Копирование SQL
+    function copySQL() {
+      const sql = `-- Таблица профилей пользователей
+create table profiles (
+  id uuid references auth.users on delete cascade primary key,
+  email text unique not null,
+  full_name text,
+  avatar_url text,
+  account_type text default 'free' check (account_type in ('free', 'pro')),
+  license_key text unique,
+  license_expires_at timestamptz,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now()
+);
+
+-- Таблица приватных боксов
+create table private_boxes (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references profiles(id) on delete cascade not null,
+  name text not null,
+  password_hash text not null,
+  recovery_email text,
+  encrypted_data jsonb,
+  created_at timestamptz default now(),
+  updated_at timestamptz default now(),
+  unique(user_id)
+);
+
+-- Таблица снимков рабочего стола
+create table desktop_snapshots (
+  id uuid default uuid_generate_v4() primary key,
+  user_id uuid references profiles(id) on delete cascade not null,
+  name text not null,
+  description text,
+  snapshot_data jsonb not null,
+  created_at timestamptz default now()
+);
+
+-- Таблица лицензионных ключей
+create table license_keys (
+  id uuid default uuid_generate_v4() primary key,
+  key text unique not null,
+  type text default 'pro' check (type in ('pro', 'trial')),
+  duration_days integer default 365,
+  is_used boolean default false,
+  used_by uuid references profiles(id),
+  created_at timestamptz default now(),
+  activated_at timestamptz
+);`;
+      
+      navigator.clipboard.writeText(sql);
+      alert('SQL скопирован!');
+    }
+
+    // Копирование RLS
+    function copyRLS() {
+      const rls = `alter table profiles enable row level security;
+alter table private_boxes enable row level security;
+alter table desktop_snapshots enable row level security;
+alter table license_keys enable row level security;
+
+create policy "Users can view own profile" on profiles for select using (auth.uid() = id);
+create policy "Users can update own profile" on profiles for update using (auth.uid() = id);
+create policy "Users can insert own profile" on profiles for insert with check (auth.uid() = id);
+
+create policy "Users can view own private box" on private_boxes for select using (auth.uid() = user_id);
+create policy "Users can create own private box" on private_boxes for insert with check (auth.uid() = user_id);
+create policy "Users can update own private box" on private_boxes for update using (auth.uid() = user_id);
+create policy "Users can delete own private box" on private_boxes for delete using (auth.uid() = user_id);
+
+create policy "Users can view own snapshots" on desktop_snapshots for select using (auth.uid() = user_id);
+create policy "Users can manage own snapshots" on desktop_snapshots for all using (auth.uid() = user_id);
+
+create policy "Users can view license keys" on license_keys for select using (true);
+create policy "Users can update used license keys" on license_keys for update using (true);`;
+      
+      navigator.clipboard.writeText(rls);
+      alert('RLS policies скопированы!');
+    }
+
+    // Копирование лицензии
+    function copyLicense() {
+      const license = `insert into license_keys (key, type, duration_days)
+values 
+  ('ITOP-PRO-ABCDE-12345-FGHIJ', 'pro', 365),
+  ('ITOP-PRO-TEST11-11111-TEST1', 'pro', 365),
+  ('ITOP-PRO-TRIAL-00001-TRIAL', 'trial', 14);`;
+      
+      navigator.clipboard.writeText(license);
+      alert('Лицензионные ключи скопированы!');
+    }
+
+    // Сохранение конфигурации
+    function saveConfig() {
+      const url = document.getElementById('supabaseUrl').value;
+      const key = document.getElementById('supabaseKey').value;
+
+      if (!url || !key) {
+        alert('Пожалуйста, заполните оба поля!');
+        return;
+      }
+
+      // Показываем успех
+      document.getElementById('saveSuccess').style.display = 'block';
+      
+      // Инструкция для ручного обновления файла
+      alert(`Теперь обновите файл supabase-client.js:\n\nconst SUPABASE_URL = '${url}';\nconst SUPABASE_ANON_KEY = '${key}';`);
+    }
+
+    // Переключение чекбокса
+    function toggleCheck(element) {
+      element.classList.toggle('done');
+    }
+
+    // Тестирование
+    function testSetup() {
+      alert('Запустите приложение командой:\n\nnpm start\n\nИ проверьте:\n1. Регистрацию нового пользователя\n2. Вход\n3. Активацию лицензии: ITOP-PRO-ABCDE-12345-FGHIJ\n4. Создание Private Box');
+    }
+  </script>
+</body>
+</html>

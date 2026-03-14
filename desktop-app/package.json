@@ -1,0 +1,63 @@
+{
+  "name": "itop-easy-desktop-clone",
+  "version": "1.0.0",
+  "description": "iTop Easy Desktop Clone - Desktop Organizer for Windows",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "dist": "electron-builder --publish=never"
+  },
+  "keywords": [
+    "desktop",
+    "organizer",
+    "windows"
+  ],
+  "author": "iTop Clone",
+  "license": "MIT",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.99.1",
+    "axios": "^1.6.0"
+  },
+  "devDependencies": {
+    "electron": "^28.3.3",
+    "electron-builder": "^24.9.1"
+  },
+  "build": {
+    "appId": "com.itopclone.desktop",
+    "productName": "iTop Easy Desktop Clone",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "assets/**/*"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        },
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "iTop Easy Desktop Clone"
+    }
+  }
+}

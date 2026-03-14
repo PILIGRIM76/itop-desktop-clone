@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Private Box</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: rgba(26, 29, 46, 0.98);
+      color: #ffffff;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10000;
+    }
+
+    .modal {
+      background: linear-gradient(135deg, #252a3d 0%, #1a1d2e 100%);
+      border-radius: 16px;
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      padding: 32px;
+      width: 100%;
+      max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .modal-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .modal-subtitle {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: #e2e8f0;
+      margin-bottom: 8px;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      color: #ffffff;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+
+    .form-input:focus {
+      outline: none;
+      border-color: #8b5cf6;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .form-input::placeholder {
+      color: #64748b;
+    }
+
+    .password-input-wrapper {
+      position: relative;
+    }
+
+    .password-toggle {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .password-toggle:hover {
+      color: #8b5cf6;
+    }
+
+    .color-picker-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .color-option {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .color-option:hover {
+      transform: scale(1.1);
+    }
+
+    .color-option.active {
+      border-color: #ffffff;
+      box-shadow: 0 0 0 2px #8b5cf6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #8b5cf6, #ec4899);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.1);
+      color: #e2e8f0;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.15);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .error-message {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .error-message.visible {
+      display: block;
+    }
+
+    .pro-badge {
+      background: linear-gradient(135deg, #fbbf24, #f59e0b);
+      color: #000;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      margin-left: auto;
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 8px;
+    }
+
+    .recovery-link {
+      color: #8b5cf6;
+      cursor: pointer;
+      text-decoration: underline;
+      font-size: 12px;
+    }
+
+    .recovery-link:hover {
+      color: #ec4899;
+    }
+
+    /* Unlock Modal Styles */
+    .unlock-icon {
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+
+    .success-message {
+      background: rgba(16, 185, 129, 0.1);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      margin-bottom: 16px;
+      display: none;
+    }
+
+    .success-message.visible {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" id="modal">
+      <!-- Content loaded dynamically -->
+    </div>
+  </div>
+
+  <script>
+    // Localization
+    let currentLang = 'ru';
+    let translations = {};
+
+    async function loadTranslations() {
+      try {
+        const response = await fetch('../locales.json');
+        const locales = await response.json();
+        translations = locales[currentLang] || locales['en'];
+      } catch (error) {
+        console.error('Error loading translations:', error);
+        translations = {};
+      }
+    }
+
+    function t(key) {
+      const keys = key.split('.');
+      let value = translations;
+      for (const k of keys) {
+        if (value && typeof value === 'object') {
+          value = value[k];
+        } else {
+          return key;
+        }
+      }
+      return value || key;
+    }
+
+    function applyTranslations() {
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        const translation = t(key);
+        if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+          el.placeholder = translation;
+        } else {
+          el.textContent = translation;
+        }
+      });
+    }
+
+    // Modal type: 'create', 'unlock', 'recovery'
+    const modalType = new URLSearchParams(window.location.search).get('type') || 'create';
+    let selectedColor = '#8b5cf6';
+
+    // Load translations before rendering
+    await loadTranslations();
+
+    // Listen for language changes
+    if (window.electronAPI) {
+      window.electronAPI.onLanguageChanged((lang) => {
+        currentLang = lang;
+        loadTranslations().then(() => {
+          renderModal(); // Перерисовать модальное окно с новым языком
+        });
+      });
+    }
+
+    // Colors for picker
+    const colors = [
+      '#ef4444', '#f97316', '#f59e0b', '#84cc16',
+      '#10b981', '#06b6d4', '#3b82f6', '#8b5cf6',
+      '#ec4899', '#f43f5e', '#6b7280', '#1f2937'
+    ];
+
+    // Render modal based on type
+    function renderModal() {
+      const modal = document.getElementById('modal');
+
+      switch(modalType) {
+        case 'create':
+          renderCreateModal(modal);
+          break;
+        case 'unlock':
+          renderUnlockModal(modal);
+          break;
+        case 'recovery':
+          renderRecoveryModal(modal);
+          break;
+      }
+      
+      // Apply translations after rendering
+      applyTranslations();
+    }
+
+    function renderCreateModal(modal) {
+      modal.innerHTML = `
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </div>
+          <div>
+            <div class="modal-title" data-i18n="privateBox.createTitle">Create Private Box</div>
+            <div class="modal-subtitle" data-i18n="privateBox.createSubtitle">Protect your files with password</div>
+          </div>
+          <div class="pro-badge">PRO</div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.boxName">Box Name</label>
+          <input type="text" class="form-input" id="boxName" data-i18n-placeholder="privateBox.boxNamePlaceholder" placeholder="My Private Box" value="Private Box">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.email">Email (for recovery)</label>
+          <input type="email" class="form-input" id="email" data-i18n-placeholder="privateBox.email" placeholder="your@email.com">
+          <div class="info-text" data-i18n="privateBox.emailHint">Used for password recovery</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.password">Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" class="form-input" id="password" data-i18n-placeholder="privateBox.password" placeholder="Enter password">
+            <button class="password-toggle" onclick="togglePassword('password')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.confirmPassword">Confirm Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" class="form-input" id="confirmPassword" data-i18n-placeholder="privateBox.confirmPassword" placeholder="Confirm password">
+            <button class="password-toggle" onclick="togglePassword('confirmPassword')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.boxColor">Box Color</label>
+          <div class="color-picker-row" id="colorPicker">
+            ${colors.map(c => `
+              <div class="color-option ${c === selectedColor ? 'active' : ''}"
+                   style="background-color: ${c};"
+                   onclick="selectColor('${c}')"></div>
+            `).join('')}
+          </div>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()" data-i18n="common.cancel">Cancel</button>
+          <button class="btn btn-primary" onclick="createPrivateBox()" data-i18n="privateBox.createPrivateBox">Create Box</button>
+        </div>
+      `;
+    }
+
+    function renderUnlockModal(modal) {
+      modal.innerHTML = `
+        <div class="modal-header">
+          <div class="modal-icon unlock-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+            </svg>
+          </div>
+          <div>
+            <div class="modal-title" data-i18n="privateBox.lockedTitle">Private Box Locked</div>
+            <div class="modal-subtitle" data-i18n="privateBox.lockedSubtitle">Enter password to unlock</div>
+          </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.password">Password</label>
+          <div class="password-input-wrapper">
+            <input type="password" class="form-input" id="password" data-i18n-placeholder="privateBox.password" placeholder="Enter password" onkeydown="handlePasswordKeydown(event)">
+            <button class="password-toggle" onclick="togglePassword('password')">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 16px;">
+          <span class="recovery-link" onclick="showRecovery()" data-i18n="privateBox.forgotPassword">Forgot password?</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="closeModal()" data-i18n="common.cancel">Cancel</button>
+          <button class="btn btn-primary" onclick="unlockPrivateBox()" data-i18n="privateBox.unlock">Unlock</button>
+        </div>
+      `;
+    }
+
+    function renderRecoveryModal(modal) {
+      modal.innerHTML = `
+        <div class="modal-header">
+          <div class="modal-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>
+            </svg>
+          </div>
+          <div>
+            <div class="modal-title" data-i18n="privateBox.recoveryTitle">Password Recovery</div>
+            <div class="modal-subtitle" data-i18n="privateBox.recoverySubtitle">Enter your email</div>
+          </div>
+        </div>
+
+        <div class="error-message" id="errorMessage"></div>
+        <div class="success-message" id="successMessage"></div>
+
+        <div class="form-group">
+          <label class="form-label" data-i18n="privateBox.emailAddress">Email Address</label>
+          <input type="email" class="form-input" id="email" data-i18n-placeholder="privateBox.email" placeholder="your@email.com">
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-secondary" onclick="backToUnlock()" data-i18n="common.back">Back</button>
+          <button class="btn btn-primary" onclick="recoverPassword()" data-i18n="privateBox.sendRecovery">Send Recovery Email</button>
+        </div>
+      `;
+    }
+
+    // Functions
+    function togglePassword(inputId) {
+      const input = document.getElementById(inputId);
+      if (input.type === 'password') {
+        input.type = 'text';
+      } else {
+        input.type = 'password';
+      }
+    }
+
+    function selectColor(color) {
+      selectedColor = color;
+      document.querySelectorAll('.color-option').forEach(el => {
+        el.classList.toggle('active', el.style.backgroundColor === color || 
+                              rgbToHex(el.style.backgroundColor) === color);
+      });
+    }
+
+    function rgbToHex(rgb) {
+      if (rgb.startsWith('#')) return rgb;
+      const match = rgb.match(/\d+/g);
+      if (!match) return rgb;
+      return '#' + match.slice(0, 3).map(x => {
+        const hex = parseInt(x).toString(16);
+        return hex.length === 1 ? '0' + hex : hex;
+      }).join('');
+    }
+
+    function showError(message) {
+      const el = document.getElementById('errorMessage');
+      if (el) {
+        el.textContent = message;
+        el.classList.add('visible');
+      }
+    }
+
+    function showSuccess(message) {
+      const el = document.getElementById('successMessage');
+      if (el) {
+        el.textContent = message;
+        el.classList.add('visible');
+      }
+    }
+
+    function hideError() {
+      const el = document.getElementById('errorMessage');
+      if (el) {
+        el.classList.remove('visible');
+      }
+    }
+
+    async function createPrivateBox() {
+      hideError();
+
+      const name = document.getElementById('boxName').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      if (!name) {
+        showError('Please enter a box name');
+        return;
+      }
+
+      if (!password) {
+        showError('Please enter a password');
+        return;
+      }
+
+      if (password.length < 6) {
+        showError('Password must be at least 6 characters');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        showError('Passwords do not match');
+        return;
+      }
+
+      try {
+        const result = await window.electronAPI.createPrivateBox({
+          name,
+          email,
+          password,
+          color: selectedColor
+        });
+
+        if (result.success) {
+          // Уведомляем главное окно об успешном создании
+          if (window.electronAPI) {
+            window.electronAPI.send('private-box-created');
+          }
+          alert('Private Box created successfully!');
+          closeModal();
+        } else {
+          showError(result.error || 'Failed to create Private Box');
+        }
+      } catch (error) {
+        showError('Error: ' + error.message);
+      }
+    }
+
+    async function unlockPrivateBox() {
+      hideError();
+
+      const password = document.getElementById('password').value;
+
+      if (!password) {
+        showError('Please enter password');
+        return;
+      }
+
+      try {
+        const result = await window.electronAPI.unlockPrivateBox(password);
+
+        if (result.success) {
+          showSuccess('Private Box unlocked!');
+          // Уведомляем главное окно об успешной разблокировке
+          if (window.electronAPI) {
+            window.electronAPI.send('private-box-unlocked');
+          }
+          setTimeout(() => closeModal(), 1000);
+        } else {
+          showError(result.error || 'Invalid password');
+        }
+      } catch (error) {
+        showError('Error: ' + error.message);
+      }
+    }
+
+    function handlePasswordKeydown(event) {
+      if (event.key === 'Enter') {
+        unlockPrivateBox();
+      }
+    }
+
+    async function recoverPassword() {
+      hideError();
+
+      const email = document.getElementById('email').value.trim();
+
+      if (!email) {
+        showError('Please enter your email');
+        return;
+      }
+
+      try {
+        const result = await window.electronAPI.recoverPrivateBoxPassword(email);
+
+        if (result.success) {
+          showSuccess(`Temporary password: ${result.tempPassword}\n(Check console for demo)`);
+        } else {
+          showError(result.error || 'Failed to recover password');
+        }
+      } catch (error) {
+        showError('Error: ' + error.message);
+      }
+    }
+
+    function showRecovery() {
+      renderRecoveryModal(document.getElementById('modal'));
+    }
+
+    function backToUnlock() {
+      renderUnlockModal(document.getElementById('modal'));
+    }
+
+    function closeModal() {
+      window.close();
+    }
+
+    // Initialize
+    renderModal();
+  </script>
+</body>
+</html>

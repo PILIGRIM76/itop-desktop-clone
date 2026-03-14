@@ -1,0 +1,1681 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>iTop Easy Desktop Clone</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Title Bar -->
+  <div class="title-bar">
+    <div class="title-bar-left">
+      <div class="logo">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+          <rect x="3" y="3" width="7" height="7" rx="2" fill="#8b5cf6"/>
+          <rect x="14" y="3" width="7" height="7" rx="2" fill="#ec4899"/>
+          <rect x="3" y="14" width="7" height="7" rx="2" fill="#3b82f6"/>
+          <rect x="14" y="14" width="7" height="7" rx="2" fill="#10b981"/>
+        </svg>
+        <span data-i18n="app.title">iTop Easy Desktop Clone</span>
+      </div>
+    </div>
+    <div class="title-bar-controls">
+      <button class="title-btn minimize" id="minimizeBtn">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <rect x="1" y="5" width="10" height="2" fill="currentColor"/>
+        </svg>
+      </button>
+      <button class="title-btn maximize" id="maximizeBtn">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <rect x="1" y="1" width="10" height="10" stroke="currentColor" fill="none" stroke-width="2"/>
+        </svg>
+      </button>
+      <button class="title-btn close" id="closeBtn">
+        <svg width="12" height="12" viewBox="0 0 12 12">
+          <path d="M1 1L11 11M11 1L1 11" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <nav class="sidebar-nav">
+        <button class="nav-item active" data-tab="boxes">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.boxes">Boxes</span>
+        </button>
+        <button class="nav-item" data-tab="wallpapers">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <path d="M21 15l-5-5L5 21"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.wallpapers">Wallpapers</span>
+        </button>
+        <button class="nav-item" data-tab="personalization">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M12 2a10 10 0 0 1 10 10"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.personalization">Personalization</span>
+        </button>
+        <button class="nav-item" data-tab="widgets">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="3" width="7" height="7" rx="1"/>
+            <rect x="14" y="14" width="7" height="7" rx="1"/>
+            <rect x="3" y="14" width="7" height="7" rx="1"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.widgets">Widgets</span>
+        </button>
+        <button class="nav-item" data-tab="ai-assistant">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+            <path d="M2 17l10 5 10-5"/>
+            <path d="M2 12l10 5 10-5"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.aiAssistant">AI Assistant</span>
+        </button>
+        <button class="nav-item" data-tab="options">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/><path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24 4.24l-4.24-4.24M6.34 6.34L2.1 2.1"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.options">Options</span>
+        </button>
+        <button class="nav-item" data-tab="account">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.account">Account</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="footer-item" id="desktopModeBtn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2"/>
+            <line x1="8" y1="21" x2="16" y2="21"/>
+            <line x1="12" y1="17" x2="12" y2="21"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.desktopMode">Desktop Mode</span>
+        </button>
+        <button class="footer-item" data-tab="settings">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M12 1v6m0 6v6m4.22-10.22l4.24-4.24M6.34 17.66l-4.24 4.24M23 12h-6m-6 0H1m20.24 4.24l-4.24-4.24M6.34 6.34L2.1 2.1"/>
+          </svg>
+          <span class="nav-tooltip" data-i18n="nav.settings">Settings</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Boxes Panel -->
+      <div class="panel active" id="boxes-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="boxes.title">Boxes</h2>
+          <p class="panel-subtitle" data-i18n="boxes.subtitle">Organize your desktop with customizable boxes</p>
+        </div>
+
+        <div class="tabs-container">
+          <button class="tab-button active" data-subtab="box" data-i18n="boxes.tabs.box">Box</button>
+          <button class="tab-button" data-subtab="appearance" data-i18n="boxes.tabs.appearance">Appearance</button>
+          <button class="tab-button" data-subtab="organization" data-i18n="boxes.tabs.organization">Organization</button>
+          <button class="tab-button" data-subtab="quick-actions" data-i18n="boxes.tabs.quickActions">Quick Actions</button>
+          <button class="tab-button" data-subtab="layout" data-i18n="boxes.tabs.layout">Layout</button>
+          <button class="tab-button" data-subtab="snapshot" data-i18n="boxes.tabs.snapshot">Snapshot</button>
+          <button class="tab-button" data-subtab="tab-mode" data-i18n="boxes.tabs.tabMode">Tab Mode</button>
+        </div>
+
+        <div class="panel-content">
+          <!-- Box Subtab -->
+          <div class="subtab-content active" id="box-subtab">
+            <div class="enable-boxes-row">
+              <span class="setting-label" data-i18n="boxes.enableBoxes">Enable Boxes</span>
+              <label class="switch">
+                <input type="checkbox" id="enableBoxes" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <!-- Box Creation Methods -->
+            <div class="box-creation-section">
+              <h3 class="section-title" data-i18n="boxes.createNewBox">Create New Box</h3>
+              <div class="creation-methods">
+                <button class="creation-btn" onclick="createBoxFromPanel()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                  <span data-i18n="boxes.fromPanel">From Panel</span>
+                </button>
+                <button class="creation-btn" onclick="createBoxByDrawing()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 3h18v18H3z"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="3" x2="9" y2="21"/>
+                  </svg>
+                  <span data-i18n="boxes.drawRectangle">Draw Rectangle</span>
+                </button>
+                <button class="creation-btn" onclick="createBoxFromContextMenu()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/>
+                  </svg>
+                  <span data-i18n="boxes.contextMenu">Context Menu</span>
+                </button>
+                <button class="creation-btn" onclick="createBoxForSelected()">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                  </svg>
+                  <span data-i18n="boxes.forSelectedIcons">For Selected Icons</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Folder Portal -->
+            <div class="folder-portal-section">
+              <h3 class="section-title" data-i18n="boxes.folderPortal">Folder Portal</h3>
+              <div class="folder-portal-row">
+                <span class="setting-desc" data-i18n="boxes.folderPortalDesc">Create a portal to access a folder directly from desktop</span>
+                <button class="action-button" onclick="createFolderPortal()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                  </svg>
+                  <span data-i18n="boxes.createFolderPortal">Create Folder Portal</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Private Box (Pro) -->
+            <div class="private-box-section">
+              <div class="pro-badge-container">
+                <span class="pro-badge" data-i18n="boxes.proBadge">PRO</span>
+              </div>
+              <h3 class="section-title" data-i18n="boxes.privateBox">Private Box</h3>
+              <div class="private-box-info">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <div class="private-box-text">
+                  <p class="private-box-title" data-i18n="boxes.privateBoxTitle">Protect your private files with password</p>
+                  <p class="private-box-desc" data-i18n="boxes.privateBoxDesc">Only 1 private box per account. Password recovery via email.</p>
+                </div>
+                <button class="action-button" onclick="createPrivateBox()" id="createPrivateBoxBtn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="3" width="7" height="7" rx="1"/>
+                    <rect x="14" y="3" width="7" height="7" rx="1"/>
+                    <rect x="3" y="14" width="7" height="7" rx="1"/>
+                    <rect x="14" y="14" width="7" height="7" rx="1"/>
+                  </svg>
+                  <span data-i18n="boxes.createPrivateBox">Create Private Box</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Boxes Limit Info -->
+            <div class="boxes-limit-info">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span data-i18n="boxes.freeAccountLimit">Free accounts: 3 boxes max. Upgrade to Pro for unlimited boxes.</span>
+            </div>
+
+            <div class="boxes-grid" id="boxesGrid">
+              <!-- Boxes will be loaded here -->
+            </div>
+          </div>
+
+          <!-- Appearance Subtab -->
+          <div class="subtab-content" id="appearance-subtab">
+            <!-- Show/Hide Headers -->
+            <div class="appearance-section">
+              <div class="setting-item toggle">
+                <div>
+                  <span class="setting-name" data-i18n="appearance.showBoxHeaders">Show Box Headers</span>
+                  <span class="setting-desc" data-i18n="appearance.showBoxHeadersDesc">Display headers with box names and icons</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="showBoxHeaders" checked onchange="updateAppearanceSettings()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <div class="preview-section">
+              <h3 class="section-title" data-i18n="appearance.colorsAndFontsPreview">Colors & Fonts Preview</h3>
+              <div class="box-preview">
+                <div class="preview-box" id="appearancePreviewBox">
+                  <div class="preview-box-header">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="7" height="7" rx="1"/>
+                      <rect x="14" y="3" width="7" height="7" rx="1"/>
+                      <rect x="3" y="14" width="7" height="7" rx="1"/>
+                      <rect x="14" y="14" width="7" height="7" rx="1"/>
+                    </svg>
+                    <span id="previewBoxName" data-i18n="appearance.previewDefault">Default</span>
+                  </div>
+                  <div class="preview-box-content">
+                    <div class="preview-icon" style="background-color: #8b5cf6;">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7" rx="1"/>
+                        <rect x="14" y="3" width="7" height="7" rx="1"/>
+                        <rect x="3" y="14" width="7" height="7" rx="1"/>
+                        <rect x="14" y="14" width="7" height="7" rx="1"/>
+                      </svg>
+                    </div>
+                    <div class="preview-icon" style="background-color: #10b981;">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                      </svg>
+                    </div>
+                    <div class="preview-icon" style="background-color: #3b82f6;">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.backgroundColors">Box Background Colors</h3>
+              <div class="color-picker" id="boxColorPicker">
+                <button class="color-option" style="background-color: #ef4444;" onclick="selectBoxColor('#ef4444')"></button>
+                <button class="color-option" style="background-color: #f97316;" onclick="selectBoxColor('#f97316')"></button>
+                <button class="color-option" style="background-color: #f59e0b;" onclick="selectBoxColor('#f59e0b')"></button>
+                <button class="color-option" style="background-color: #84cc16;" onclick="selectBoxColor('#84cc16')"></button>
+                <button class="color-option" style="background-color: #10b981;" onclick="selectBoxColor('#10b981')"></button>
+                <button class="color-option" style="background-color: #06b6d4;" onclick="selectBoxColor('#06b6d4')"></button>
+                <button class="color-option active" style="background-color: #3b82f6;" onclick="selectBoxColor('#3b82f6')"></button>
+                <button class="color-option" style="background-color: #8b5cf6;" onclick="selectBoxColor('#8b5cf6')"></button>
+                <button class="color-option" style="background-color: #ec4899;" onclick="selectBoxColor('#ec4899')"></button>
+                <button class="color-option" style="background-color: #f43f5e;" onclick="selectBoxColor('#f43f5e')"></button>
+                <button class="color-option" style="background-color: #6b7280;" onclick="selectBoxColor('#6b7280')"></button>
+                <button class="color-option" style="background-color: #1f2937;" onclick="selectBoxColor('#1f2937')"></button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.transparency">Background Transparency</h3>
+              <input type="range" class="slider-control" id="transparencySlider" min="0" max="100" value="50" oninput="updateTransparency(this.value)">
+              <span class="slider-value" id="transparencyValue">50%</span>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.headerFont">Header Font</h3>
+              <div class="font-selector">
+                <select class="font-select" id="headerFontSelect" onchange="updateHeaderFont(this.value)">
+                  <option value="Segoe UI">Segoe UI (Default)</option>
+                  <option value="Arial">Arial</option>
+                  <option value="Calibri">Calibri</option>
+                  <option value="Times New Roman">Times New Roman</option>
+                  <option value="Georgia">Georgia</option>
+                  <option value="Verdana">Verdana</option>
+                  <option value="Tahoma">Tahoma</option>
+                  <option value="Trebuchet MS">Trebuchet MS</option>
+                  <option value="Impact">Impact</option>
+                  <option value="Courier New">Courier New</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.headerFontSize">Header Font Size</h3>
+              <input type="range" class="slider-control" id="headerFontSizeSlider" min="10" max="24" value="14" oninput="updateHeaderFontSize(this.value)">
+              <span class="slider-value" id="headerFontSizeValue">14px</span>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.headerFontWeight">Header Font Weight</h3>
+              <div class="font-weight-options">
+                <button class="font-weight-btn active" data-weight="400" onclick="updateHeaderFontWeight('400')" data-i18n="appearance.normal">Normal</button>
+                <button class="font-weight-btn" data-weight="500" onclick="updateHeaderFontWeight('500')" data-i18n="appearance.medium">Medium</button>
+                <button class="font-weight-btn" data-weight="600" onclick="updateHeaderFontWeight('600')" data-i18n="appearance.semiBold">Semi Bold</button>
+                <button class="font-weight-btn" data-weight="700" onclick="updateHeaderFontWeight('700')" data-i18n="appearance.bold">Bold</button>
+              </div>
+            </div>
+
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="appearance.headerTextColor">Header Text Color</h3>
+              <div class="text-color-picker">
+                <button class="color-option" style="background-color: #ffffff; border: 1px solid #333;" onclick="selectHeaderTextColor('#ffffff')"></button>
+                <button class="color-option" style="background-color: #f1f5f9;" onclick="selectHeaderTextColor('#f1f5f9')"></button>
+                <button class="color-option" style="background-color: #cbd5e1;" onclick="selectHeaderTextColor('#cbd5e1')"></button>
+                <button class="color-option" style="background-color: #000000; border: 1px solid #ccc;" onclick="selectHeaderTextColor('#000000')"></button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Other subtabs -->
+          <div class="subtab-content" id="organization-subtab">
+            <div class="info-card">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/>
+                <line x1="12" y1="16" x2="12" y2="12"/>
+                <line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <p data-i18n="organization.infoText">Box Rules will be automatically applied to assign newly created desktop icons.</p>
+            </div>
+
+            <!-- Box Selection -->
+            <div class="settings-section">
+              <h3 class="section-title" data-i18n="organization.selectBoxToConfigure">Select Box to Configure Rules</h3>
+              <select class="box-rule-select" id="boxRuleSelect" onchange="loadBoxRules(this.value)">
+                <option value="" data-i18n="organization.selectBox">-- Select a Box --</option>
+              </select>
+            </div>
+
+            <!-- Rules List -->
+            <div class="rules-list-container" id="rulesListContainer" style="display: none;">
+              <h3 class="section-title" data-i18n="organization.rulesFor">Rules for <span id="currentBoxName"></span></h3>
+              <div class="rules-list" id="rulesList">
+                <!-- Rules will be loaded here -->
+              </div>
+
+              <!-- Add New Rule -->
+              <div class="add-rule-section">
+                <h4 class="subsection-title" data-i18n="organization.addNewRule">Add New Rule</h4>
+                <div class="rule-form">
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" data-i18n="organization.ruleName">Rule Name</label>
+                      <input type="text" class="form-input" id="ruleName" placeholder="e.g., Documents" data-i18n="organization.ruleNamePlaceholder">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" data-i18n="organization.fileType">File Type</label>
+                      <select class="form-select" id="ruleFileType">
+                        <option value="extension" data-i18n="organization.byExtension">By Extension</option>
+                        <option value="name" data-i18n="organization.byName">By Name Pattern</option>
+                        <option value="size" data-i18n="organization.bySize">By Size</option>
+                        <option value="date" data-i18n="organization.byDate">By Date</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="form-row">
+                    <div class="form-group">
+                      <label class="form-label" data-i18n="organization.patternValue">Pattern/Value</label>
+                      <input type="text" class="form-input" id="rulePattern" placeholder="e.g., .doc, .pdf, report*" data-i18n="organization.patternPlaceholder">
+                    </div>
+                    <div class="form-group">
+                      <label class="form-label" data-i18n="organization.priority">Priority</label>
+                      <select class="form-select" id="rulePriority">
+                        <option value="1" data-i18n="organization.high">High</option>
+                        <option value="2" selected data-i18n="organization.medium">Medium</option>
+                        <option value="3" data-i18n="organization.low">Low</option>
+                      </select>
+                    </div>
+                  </div>
+                  <button class="action-button" onclick="addNewRule()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                    <span data-i18n="organization.addRule">Add Rule</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="rules-actions">
+              <button class="action-button" onclick="applyRulesToUnassigned()" data-i18n="organization.applyToUnassigned">Apply to unassigned icons</button>
+              <button class="action-button secondary" onclick="applyRulesToAll()" data-i18n="organization.applyToAll">Apply to all icons</button>
+            </div>
+          </div>
+
+          <div class="subtab-content" id="quick-actions-subtab">
+            <h3 class="section-title" data-i18n="quickActions.clickBehavior">Click Behavior</h3>
+            <div class="click-behavior-section">
+              <div class="setting-item toggle">
+                <div>
+                  <span class="setting-name" data-i18n="quickActions.singleClickOpen">Single Click Open</span>
+                  <span class="setting-desc" data-i18n="quickActions.singleClickOpenDesc">Open boxes and items with a single click</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="singleClickOpen" onchange="updateQuickActions()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="setting-item toggle">
+                <div>
+                  <span class="setting-name" data-i18n="quickActions.doubleClickRequired">Double Click Required</span>
+                  <span class="setting-desc" data-i18n="quickActions.doubleClickRequiredDesc">Require double click to open items</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="doubleClickRequired" checked onchange="updateQuickActions()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <h3 class="section-title" data-i18n="quickActions.quickAccess">Quick Access</h3>
+            <div class="quick-access-section">
+              <div class="setting-item toggle">
+                <div>
+                  <span class="setting-name" data-i18n="quickActions.showQuickAccess">Show Quick Access Bar</span>
+                  <span class="setting-desc" data-i18n="quickActions.showQuickAccessDesc">Display quick access bar at top of desktop</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="showQuickAccess" checked onchange="updateQuickActions()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+              <div class="setting-item toggle">
+                <div>
+                  <span class="setting-name" data-i18n="quickActions.keyboardShortcuts">Keyboard Shortcuts</span>
+                  <span class="setting-desc" data-i18n="quickActions.keyboardShortcutsDesc">Enable Ctrl+1-9 shortcuts for boxes</span>
+                </div>
+                <label class="switch">
+                  <input type="checkbox" id="enableKeyboardShortcuts" onchange="updateQuickActions()">
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+
+            <h3 class="section-title" data-i18n="quickActions.orderMaintenance">Order Maintenance</h3>
+            <div class="actions-grid">
+              <div class="action-card" onclick="autoArrangeIcons()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+                </svg>
+                <span data-i18n="quickActions.autoArrange">Auto Arrange</span>
+              </div>
+              <div class="action-card" onclick="alignToGrid()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="7" height="7" rx="1"/>
+                  <rect x="14" y="3" width="7" height="7" rx="1"/>
+                  <rect x="3" y="14" width="7" height="7" rx="1"/>
+                  <rect x="14" y="14" width="7" height="7" rx="1"/>
+                </svg>
+                <span data-i18n="quickActions.alignToGrid">Align to Grid</span>
+              </div>
+              <div class="action-card" onclick="sortByName()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M3 6h18M6 12h12M9 18h6"/>
+                </svg>
+                <span data-i18n="quickActions.sortByName">Sort by Name</span>
+              </div>
+              <div class="action-card" onclick="sortByType()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span data-i18n="quickActions.sortByType">Sort by Type</span>
+              </div>
+              <div class="action-card" onclick="sortByDate()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                </svg>
+                <span data-i18n="quickActions.sortByDate">Sort by Date</span>
+              </div>
+              <div class="action-card" onclick="hideDesktopIcons()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                  <circle cx="12" cy="13" r="4"/>
+                  <line x1="1" y1="1" x2="23" y2="23"/>
+                </svg>
+                <span data-i18n="quickActions.hideDesktopIcons">Hide Desktop Icons</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="subtab-content" id="layout-subtab">
+            <div class="layout-section">
+              <h3 class="section-title" data-i18n="layout.boxLayoutBehavior">Box Layout Behavior</h3>
+              <p class="section-desc" data-i18n="layout.behaviorDesc">Configure how boxes behave when screen resolution or display settings change</p>
+
+              <div class="settings-section">
+                <h4 class="subsection-title" data-i18n="layout.positionLocking">Position Locking</h4>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="layout.lockPositions">Lock Box Positions</span>
+                    <span class="setting-desc" data-i18n="layout.lockPositionsDesc">Keep boxes in fixed positions</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="lockBoxPositions" onchange="updateLayoutSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="layout.autoArrangeOnResize">Auto-arrange on Resolution Change</span>
+                    <span class="setting-desc" data-i18n="layout.autoArrangeOnResizeDesc">Automatically rearrange boxes when resolution changes</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="autoArrangeOnResize" checked onchange="updateLayoutSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <h4 class="subsection-title" data-i18n="layout.gridSettings">Grid Settings</h4>
+                <div class="grid-settings-row">
+                  <div class="form-group">
+                    <label class="form-label" data-i18n="layout.gridSize">Grid Size</label>
+                    <select class="form-select" id="gridSizeSelect" onchange="updateLayoutSettings()">
+                      <option value="small" data-i18n="layout.gridSizeSmall">Small (50px)</option>
+                      <option value="medium" selected data-i18n="layout.gridSizeMedium">Medium (75px)</option>
+                      <option value="large" data-i18n="layout.gridSizeLarge">Large (100px)</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label class="form-label" data-i18n="layout.iconSpacing">Box Spacing</label>
+                    <input type="range" class="slider-control" id="boxSpacingSlider" min="10" max="100" value="20" oninput="updateLayoutSettings()">
+                  </div>
+                </div>
+              </div>
+
+              <div class="settings-section">
+                <h4 class="subsection-title" data-i18n="layout.multiMonitorSupport">Multi-Monitor Support</h4>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="layout.spanMonitors">Span Across Monitors</span>
+                    <span class="setting-desc" data-i18n="layout.spanMonitorsDesc">Allow boxes to span across multiple monitors</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="spanMonitors" onchange="updateLayoutSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="layout.rememberPerMonitor">Remember Per-Monitor Layout</span>
+                    <span class="setting-desc" data-i18n="layout.rememberPerMonitorDesc">Save separate layouts for each monitor</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="rememberPerMonitor" onchange="updateLayoutSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+
+              <button class="action-button" onclick="saveLayoutAsDefault()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                <span data-i18n="layout.saveAsDefault">Save as Default Layout</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="subtab-content" id="snapshot-subtab">
+            <div class="snapshot-section">
+              <h3 class="section-title" data-i18n="snapshot.desktopSnapshots">Desktop Snapshots</h3>
+              <p class="section-desc" data-i18n="snapshot.desc">Create backups of your desktop configuration and restore them later</p>
+
+              <!-- Create Snapshot -->
+              <div class="create-snapshot-section">
+                <div class="form-group">
+                  <label class="form-label" data-i18n="snapshot.snapshotName">Snapshot Name</label>
+                  <input type="text" class="form-input" id="snapshotName" placeholder="e.g., Work Setup, Gaming Layout" data-i18n="snapshot.snapshotNamePlaceholder">
+                </div>
+                <div class="form-group">
+                  <label class="form-label" data-i18n="snapshot.snapshotDescription">Description (optional)</label>
+                  <textarea class="form-textarea" id="snapshotDescription" placeholder="Describe this snapshot..." data-i18n="snapshot.snapshotDescriptionPlaceholder"></textarea>
+                </div>
+                <div class="snapshot-options">
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="includeWallpaper" checked>
+                    <span data-i18n="snapshot.includeWallpaper">Include wallpaper settings</span>
+                  </label>
+                  <label class="checkbox-label">
+                    <input type="checkbox" id="includeWidgetPositions" checked>
+                    <span data-i18n="snapshot.includeWidgetPositions">Include widget positions</span>
+                  </label>
+                </div>
+                <button class="action-button" onclick="createSnapshot()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+                    <circle cx="12" cy="13" r="4"/>
+                  </svg>
+                  <span data-i18n="snapshot.createSnapshot">Create Snapshot</span>
+                </button>
+              </div>
+
+              <!-- Saved Snapshots -->
+              <div class="saved-snapshots-section">
+                <h4 class="subsection-title" data-i18n="snapshot.savedSnapshots">Saved Snapshots</h4>
+                <div class="snapshots-list" id="snapshotsList">
+                  <!-- Snapshots will be loaded here -->
+                  <div class="snapshot-item">
+                    <div class="snapshot-info">
+                      <div class="snapshot-name" data-i18n="snapshot.sampleName">Default Layout</div>
+                      <div class="snapshot-meta" data-i18n="snapshot.sampleMeta">Created: Jan 15, 2025 � 3 boxes � 24 icons</div>
+                    </div>
+                    <div class="snapshot-actions">
+                      <button class="snapshot-btn restore" onclick="restoreSnapshot('1')" title="Restore" data-i18n-title="snapshot.restore">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+                          <path d="M3 3v5h5"/>
+                        </svg>
+                      </button>
+                      <button class="snapshot-btn export" onclick="exportSnapshot('1')" title="Export" data-i18n-title="snapshot.export">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+                        </svg>
+                      </button>
+                      <button class="snapshot-btn delete" onclick="deleteSnapshot('1')" title="Delete" data-i18n-title="snapshot.deleteTitle">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                          <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Import Snapshot -->
+              <div class="import-snapshot-section">
+                <h4 class="subsection-title" data-i18n="snapshot.importSnapshot">Import Snapshot</h4>
+                <div class="import-row">
+                  <input type="file" class="file-input" id="snapshotFile" accept=".snapshot,.json">
+                  <button class="action-button secondary" onclick="importSnapshot()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span data-i18n="snapshot.import">Import from File</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab Mode Subtab -->
+          <div class="subtab-content" id="tab-mode-subtab">
+            <div class="tab-mode-section">
+              <h3 class="section-title" data-i18n="boxes.tabMode">Tab Mode</h3>
+              <p class="section-desc" data-i18n="boxes.tabModeDesc">Merge boxes into tabs for compact organization</p>
+
+              <!-- Create New Tab -->
+              <div class="create-tab-section">
+                <div class="form-group">
+                  <label class="form-label" data-i18n="boxes.tabName">Tab Name</label>
+                  <input type="text" class="form-input" id="newTabName" placeholder="e.g., Work, Games, Documents">
+                </div>
+                <button class="action-button" onclick="createNewTab()">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/>
+                    <line x1="12" y1="18" x2="12" y2="12"/><line x1="9" y1="15" x2="15" y2="15"/>
+                  </svg>
+                  <span data-i18n="boxes.createTab">Create Tab</span>
+                </button>
+              </div>
+
+              <!-- Existing Tabs -->
+              <div class="tabs-list-section">
+                <h4 class="subsection-title" data-i18n="boxes.existingTabs">Existing Tabs</h4>
+                <div class="tabs-list" id="tabsList">
+                  <!-- Tabs will be loaded here -->
+                </div>
+              </div>
+
+              <!-- Merge Boxes into Tab -->
+              <div class="merge-tab-section">
+                <h4 class="subsection-title" data-i18n="boxes.mergeBoxesIntoTab">Merge Boxes into Tab</h4>
+                <div class="merge-tab-controls">
+                  <select class="form-select" id="mergeBoxSelect1">
+                    <option value="" data-i18n="boxes.selectFirstBox">Select first box...</option>
+                  </select>
+                  <span class="merge-plus">+</span>
+                  <select class="form-select" id="mergeBoxSelect2">
+                    <option value="" data-i18n="boxes.selectSecondBox">Select second box...</option>
+                  </select>
+                  <button class="action-button" onclick="mergeBoxesIntoTab()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 14L4 9l5-5"/><path d="M4 9h10c1.1 0 2 .9 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9c0-1.1.9-2 2-2z"/>
+                    </svg>
+                    <span data-i18n="boxes.merge">Merge</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Tab Settings -->
+              <div class="tab-settings-section">
+                <h4 class="subsection-title" data-i18n="boxes.tabSettings">Tab Settings</h4>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="boxes.autoCollapseTabs">Auto-collapse inactive tabs</span>
+                    <span class="setting-desc" data-i18n="boxes.autoCollapseTabsDesc">Minimize tabs when not in use</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="autoCollapseTabs" onchange="updateTabSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+                <div class="setting-item toggle">
+                  <div>
+                    <span class="setting-name" data-i18n="boxes.showTabIcons">Show box icons in tab headers</span>
+                    <span class="setting-desc" data-i18n="boxes.showTabIconsDesc">Display icons alongside box names</span>
+                  </div>
+                  <label class="switch">
+                    <input type="checkbox" id="showTabIcons" checked onchange="updateTabSettings()">
+                    <span class="slider"></span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Other panels will be loaded dynamically -->
+      <div class="panel" id="wallpapers-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="wallpapers.title">Wallpapers</h2>
+          <p class="panel-subtitle" data-i18n="wallpapers.subtitle">Discover stunning wallpapers for your desktop</p>
+        </div>
+
+        <!-- Wallpaper Type Tabs -->
+        <div class="wallpapers-tabs">
+          <button class="wallpaper-tab active" onclick="switchWallpaperTab('live')" data-i18n="wallpapers.liveWallpapers">Live Wallpapers</button>
+          <button class="wallpaper-tab" onclick="switchWallpaperTab('static')" data-i18n="wallpapers.staticWallpapers">Static Wallpapers</button>
+          <button class="wallpaper-tab" onclick="switchWallpaperTab('my')" data-i18n="wallpapers.myWallpapers">My Wallpapers</button>
+        </div>
+
+        <!-- Search and Filter -->
+        <div class="wallpaper-controls">
+          <div class="wallpaper-search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+            <input type="text" class="wallpaper-search-input" placeholder="Search wallpapers..." id="wallpaperSearch" oninput="filterWallpapers()" data-i18n="wallpapers.search">
+          </div>
+          <div class="wallpaper-filters">
+            <select class="wallpaper-filter-select" id="categoryFilter" onchange="filterWallpapers()" data-i18n="wallpapers.categories.all">
+              <option value="" data-i18n="wallpapers.categories.all">All Categories</option>
+              <option value="nature" data-i18n="wallpapers.categories.nature">Nature</option>
+              <option value="space" data-i18n="wallpapers.categories.space">Space</option>
+              <option value="abstract" data-i18n="wallpapers.categories.abstract">Abstract</option>
+              <option value="city" data-i18n="wallpapers.categories.city">City</option>
+              <option value="gaming" data-i18n="wallpapers.categories.gaming">Gaming</option>
+              <option value="anime" data-i18n="wallpapers.categories.anime">Anime</option>
+            </select>
+            <select class="wallpaper-filter-select" id="resolutionFilter" onchange="filterWallpapers()">
+              <option value="" data-i18n="wallpapers.resolutions.all">All Resolutions</option>
+              <option value="4k" data-i18n="wallpapers.resolutions.4k">4K (3840x2160)</option>
+              <option value="2k" data-i18n="wallpapers.resolutions.2k">2K (2560x1440)</option>
+              <option value="1080" data-i18n="wallpapers.resolutions.1080">Full HD (1920x1080)</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Popular Wallpapers -->
+        <div class="popular-section">
+          <h3 class="section-title" data-i18n="wallpapers.popular">🔥 Popular This Week</h3>
+          <div class="popular-wallpapers" id="popularWallpapers">
+            <!-- Popular wallpapers loaded here -->
+          </div>
+        </div>
+
+        <!-- Wallpapers Grid -->
+        <div class="wallpapers-grid" id="wallpapersGrid">
+          <!-- Wallpapers will be loaded here -->
+        </div>
+
+        <!-- Playlist Settings (for Live Wallpapers) -->
+        <div class="playlist-settings" id="playlistSettings" style="display: none;">
+          <h3 class="section-title" data-i18n="wallpapers.playlistSettings">Playlist Settings</h3>
+          <div class="playlist-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="singleLoop" checked>
+              <span data-i18n="wallpapers.playlist.singleLoop">Single Loop</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="shufflePlay">
+              <span data-i18n="wallpapers.playlist.shuffle">Shuffle</span>
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="orderedPlay">
+              <span data-i18n="wallpapers.playlist.order">Order</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Lock Screen Option -->
+        <div class="lock-screen-option">
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="wallpapers.lockScreen">Apply to Lock Screen</span>
+              <span class="setting-desc" data-i18n="wallpapers.lockScreenDesc">Use static wallpaper on Windows lock screen</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="applyToLockScreen">
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Create Wallpaper Button -->
+        <div class="create-wallpaper-section">
+          <button class="action-button" onclick="openCreateWallpaper()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/>
+            </svg>
+            <span data-i18n="wallpapers.createCustom">Create Custom Wallpaper</span>
+          </button>
+          <button class="action-button" onclick="selectLocalWallpaper()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <span data-i18n="wallpapers.selectLocal">Select Local Wallpaper</span>
+          </button>
+          <button class="action-button" onclick="toggleLiveWallpaperControls()" id="liveWallpaperBtn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polygon points="5 3 19 12 5 21 5 3"/>
+            </svg>
+            <span data-i18n="wallpapers.playLive">Play Live Wallpaper</span>
+          </button>
+        </div>
+
+        <!-- Live Wallpaper Controls -->
+        <div class="live-wallpaper-controls" id="liveWallpaperControls" style="display: none;">
+          <h3 class="section-title" data-i18n="wallpapers.liveWallpaperControls">Live Wallpaper Controls</h3>
+          <div class="control-row">
+            <button class="control-btn" onclick="toggleWallpaperPause()" id="pausePlayBtn">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>
+              </svg>
+              <span data-i18n="wallpapers.pause">Pause</span>
+            </button>
+            <button class="control-btn" onclick="stopWallpaper()">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+              </svg>
+              <span data-i18n="wallpapers.stop">Stop</span>
+            </button>
+            <div class="volume-control">
+              <label data-i18n="wallpapers.volume">Volume:</label>
+              <input type="range" min="0" max="100" value="0" oninput="setWallpaperVolume(this.value)" id="volumeSlider">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="personalization-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="personalization.title">Personalization</h2>
+          <p class="panel-subtitle" data-i18n="personalization.subtitle">Customize your desktop appearance</p>
+        </div>
+
+        <!-- Pro Banner -->
+        <div class="pro-feature-banner">
+          <span class="pro-badge" data-i18n="boxes.proBadge">PRO</span>
+          <h3 data-i18n="personalization.unlockFull">Unlock Full Personalization</h3>
+          <p data-i18n="personalization.unlockFullDesc">Get access to premium themes, custom taskbar styles, start menu customization, and more</p>
+          <button class="action-button" data-i18n="personalization.upgradeToPro">Upgrade to Pro</button>
+        </div>
+
+        <!-- Personalization Tabs -->
+        <div class="personalization-tabs">
+          <button class="personalization-tab active" onclick="switchPersonalizationTab('themes')" data-i18n="personalization.themes">Themes</button>
+          <button class="personalization-tab" onclick="switchPersonalizationTab('taskbar')" data-i18n="personalization.taskbar">Taskbar</button>
+          <button class="personalization-tab" onclick="switchPersonalizationTab('startmenu')" data-i18n="personalization.startMenu">Start Menu</button>
+          <button class="personalization-tab" onclick="switchPersonalizationTab('desktopicons')" data-i18n="personalization.desktopIcons">Desktop Icons</button>
+          <button class="personalization-tab" onclick="switchPersonalizationTab('mouse')" data-i18n="personalization.mouse">Mouse</button>
+        </div>
+
+        <!-- Themes Content -->
+        <div class="personalization-content active" id="themes-content">
+          <h3 class="section-title" data-i18n="personalization.chooseTheme">Choose a Theme</h3>
+          <div class="themes-grid" id="themesGrid">
+            <!-- Themes will be loaded here -->
+          </div>
+        </div>
+
+        <!-- Taskbar Content -->
+        <div class="personalization-content" id="taskbar-content">
+          <div class="taskbar-preview">
+            <h3 class="section-title" data-i18n="personalization.taskbarPreview">Taskbar Preview</h3>
+            <div class="taskbar-style-preview" id="taskbarPreview">
+              <div class="taskbar-style-icon"></div>
+              <div class="taskbar-style-icon"></div>
+              <div class="taskbar-style-icon"></div>
+              <div class="taskbar-style-icon"></div>
+            </div>
+          </div>
+          <h3 class="section-title" data-i18n="personalization.taskbarStyle">Taskbar Style</h3>
+          <div class="taskbar-style-options">
+            <div class="taskbar-style-card selected" onclick="selectTaskbarStyle('default')">
+              <div class="taskbar-style-preview">
+                <div class="taskbar-style-icon"></div>
+                <div class="taskbar-style-icon"></div>
+                <div class="taskbar-style-icon"></div>
+              </div>
+              <div class="taskbar-style-name" data-i18n="personalization.default">Default</div>
+            </div>
+            <div class="taskbar-style-card" onclick="selectTaskbarStyle('centered')">
+              <div class="taskbar-style-preview" style="justify-content: center;">
+                <div class="taskbar-style-icon"></div>
+                <div class="taskbar-style-icon"></div>
+                <div class="taskbar-style-icon"></div>
+              </div>
+              <div class="taskbar-style-name" data-i18n="personalization.centeredWin11">Centered (Windows 11)</div>
+            </div>
+            <div class="taskbar-style-card" onclick="selectTaskbarStyle('floating')">
+              <div class="taskbar-style-preview" style="justify-content: center; padding: 8px;">
+                <div style="display: flex; gap: 4px; background: rgba(139, 92, 246, 0.3); padding: 4px 12px; border-radius: 8px;">
+                  <div class="taskbar-style-icon"></div>
+                  <div class="taskbar-style-icon"></div>
+                  <div class="taskbar-style-icon"></div>
+                </div>
+              </div>
+              <div class="taskbar-style-name" data-i18n="personalization.floating">Floating</div>
+            </div>
+            <div class="taskbar-style-card" onclick="selectTaskbarStyle('minimal')">
+              <div class="taskbar-style-preview" style="gap: 16px;">
+                <div class="taskbar-style-icon" style="width: 32px; height: 32px;"></div>
+                <div class="taskbar-style-icon" style="width: 32px; height: 32px;"></div>
+              </div>
+              <div class="taskbar-style-name" data-i18n="personalization.minimal">Minimal</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Start Menu Content -->
+        <div class="personalization-content" id="startmenu-content">
+          <h3 class="section-title" data-i18n="personalization.startMenuStyle">Start Menu Style</h3>
+          <div class="start-menu-options">
+            <div class="start-menu-style-card selected" onclick="selectStartMenuStyle('default')">
+              <div class="start-menu-preview">
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+              </div>
+              <div class="start-menu-style-name" data-i18n="personalization.defaultWin10">Default (Windows 10)</div>
+            </div>
+            <div class="start-menu-style-card" onclick="selectStartMenuStyle('centered')">
+              <div class="start-menu-preview" style="justify-content: center;">
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+              </div>
+              <div class="start-menu-style-name" data-i18n="personalization.centeredWin11">Centered (Windows 11)</div>
+            </div>
+            <div class="start-menu-style-card" onclick="selectStartMenuStyle('full')">
+              <div class="start-menu-preview" style="grid-template-columns: repeat(6, 1fr);">
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+                <div class="start-menu-preview-item"></div>
+              </div>
+              <div class="start-menu-style-name" data-i18n="personalization.fullScreen">Full Screen</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Desktop Icons Content -->
+        <div class="personalization-content" id="desktopicons-content">
+          <h3 class="section-title" data-i18n="personalization.desktopIconsMode">Desktop Icons Mode</h3>
+          <div class="desktop-icons-options">
+            <div class="desktop-icons-card selected" onclick="selectDesktopIconsMode('default')">
+              <div class="desktop-icons-preview">
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+              </div>
+              <div class="desktop-icons-name" data-i18n="personalization.desktopIconsDefault">Default</div>
+            </div>
+            <div class="desktop-icons-card" onclick="selectDesktopIconsMode('large')">
+              <div class="desktop-icons-preview" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="desktop-icons-preview-item" style="grid-column: span 2;"></div>
+                <div class="desktop-icons-preview-item" style="grid-column: span 2;"></div>
+              </div>
+              <div class="desktop-icons-name" data-i18n="personalization.desktopIconsLarge">Large Icons</div>
+            </div>
+            <div class="desktop-icons-card" onclick="selectDesktopIconsMode('small')">
+              <div class="desktop-icons-preview" style="grid-template-columns: repeat(4, 1fr); gap: 2px;">
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+                <div class="desktop-icons-preview-item"></div>
+              </div>
+              <div class="desktop-icons-name" data-i18n="personalization.desktopIconsSmall">Small Icons</div>
+            </div>
+            <div class="desktop-icons-card" onclick="selectDesktopIconsMode('hidden')">
+              <div class="desktop-icons-preview" style="background: var(--bg-secondary);">
+                <div style="width: 100%; text-align: center; color: var(--text-secondary); font-size: 12px; align-self: center;" data-i18n="personalization.desktopIconsHidden">
+                  Hidden
+                </div>
+              </div>
+              <div class="desktop-icons-name" data-i18n="personalization.desktopIconsHidden">Hidden</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mouse Content -->
+        <div class="personalization-content" id="mouse-content">
+          <h3 class="section-title" data-i18n="personalization.mouseCursorStyle">Mouse Cursor Style</h3>
+          <div class="mouse-cursor-options">
+            <div class="mouse-cursor-card selected" onclick="selectMouseCursor('default')">
+              <div class="mouse-cursor-preview">
+                <svg class="mouse-cursor-svg" width="32" height="32" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1">
+                  <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                </svg>
+              </div>
+              <div class="mouse-cursor-name" data-i18n="personalization.mouseCursorDefault">Default</div>
+            </div>
+            <div class="mouse-cursor-card" onclick="selectMouseCursor('large')">
+              <div class="mouse-cursor-preview">
+                <svg class="mouse-cursor-svg" width="48" height="48" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1.5">
+                  <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                </svg>
+              </div>
+              <div class="mouse-cursor-name" data-i18n="personalization.mouseCursorLarge">Large</div>
+            </div>
+            <div class="mouse-cursor-card" onclick="selectMouseCursor('inverted')">
+              <div class="mouse-cursor-preview">
+                <svg class="mouse-cursor-svg" width="32" height="32" viewBox="0 0 24 24" fill="black" stroke="white" stroke-width="1">
+                  <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                </svg>
+              </div>
+              <div class="mouse-cursor-name" data-i18n="personalization.mouseCursorInverted">Inverted</div>
+            </div>
+            <div class="mouse-cursor-card" onclick="selectMouseCursor('colorful')">
+              <div class="mouse-cursor-preview">
+                <svg class="mouse-cursor-svg" width="32" height="32" viewBox="0 0 24 24" fill="url(#cursorGradient)" stroke="black" stroke-width="1">
+                  <defs>
+                    <linearGradient id="cursorGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" style="stop-color:#8b5cf6"/>
+                      <stop offset="100%" style="stop-color:#ec4899"/>
+                    </linearGradient>
+                  </defs>
+                  <path d="M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z"/>
+                </svg>
+              </div>
+              <div class="mouse-cursor-name" data-i18n="personalization.mouseCursorColorful">Colorful</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="widgets-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="widgets.title">Widgets</h2>
+          <p class="panel-subtitle" data-i18n="widgets.subtitle">Enable and customize desktop widgets</p>
+        </div>
+
+        <!-- Widget Global Settings -->
+        <div class="widget-global-settings">
+          <h3 class="section-title" data-i18n="widgets.globalSettings">Global Widget Settings</h3>
+          
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="widgets.enableWidgets">Enable Widgets</span>
+              <span class="setting-desc" data-i18n="widgets.enableWidgetsDesc">Show widgets on desktop</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enableWidgets" checked onchange="toggleWidgets()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="widgets.showInDesktopMode">Show in Desktop Mode</span>
+              <span class="setting-desc" data-i18n="widgets.showInDesktopModeDesc">Display widgets when desktop mode is active</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="showInDesktopMode" checked onchange="updateGlobalWidgetSettings()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="widgets.alwaysOnTop">Always on Top</span>
+              <span class="setting-desc" data-i18n="widgets.alwaysOnTopDesc">Keep widgets above other windows</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="alwaysOnTop" checked onchange="updateGlobalWidgetSettings()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="widgets.blurEffect">Blur Effect</span>
+              <span class="setting-desc" data-i18n="widgets.blurEffectDesc">Enable background blur effect</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="blurEffect" checked onchange="updateGlobalWidgetSettings()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="widgets.animations">Animations</span>
+              <span class="setting-desc" data-i18n="widgets.animationsDesc">Enable widget animations</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="animationEnabled" checked onchange="updateGlobalWidgetSettings()">
+              <span class="slider"></span>
+            </label>
+          </div>
+          
+          <div class="setting-item">
+            <div>
+              <span class="setting-name" data-i18n="widgets.transparency">Transparency</span>
+              <span class="setting-desc" data-i18n="widgets.transparencyDesc">Widget background transparency</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="range" class="slider-control" id="widgetTransparencySlider" min="0" max="100" value="85" oninput="updateGlobalWidgetSettings()">
+              <span class="slider-value" id="widgetTransparencyValue">85%</span>
+            </div>
+          </div>
+          
+          <div class="setting-item">
+            <div>
+              <span class="setting-name" data-i18n="widgets.scale">Scale</span>
+              <span class="setting-desc" data-i18n="widgets.scaleDesc">Global widget scale</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 10px;">
+              <input type="range" class="slider-control" id="widgetScaleSlider" min="50" max="150" value="100" oninput="updateGlobalWidgetSettings()">
+              <span class="slider-value" id="widgetScaleValue">100%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="widgets-grid" id="widgetsGrid">
+          <!-- Widgets will be loaded here -->
+        </div>
+
+        <!-- Widget Details Modal -->
+        <div id="widgetDetailsModal" class="modal-overlay" style="display: none;">
+          <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+              <h3 id="widgetDetailTitle" data-i18n="widgets.settings">Widget Settings</h3>
+              <button class="modal-close" onclick="closeWidgetDetails()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="modal-body" id="widgetDetailBody">
+              <!-- Widget specific settings loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="ai-assistant-panel">
+        <div class="panel-header">
+          <div class="ai-header-content">
+            <div class="ai-icon-large">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+                <path d="M2 17l10 5 10-5"/>
+                <path d="M2 12l10 5 10-5"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="panel-title" data-i18n="aiAssistant.title">AI Assistant</h2>
+              <p class="panel-subtitle" data-i18n="aiAssistant.subtitle">Your one-stop hub for AI-powered desktop tools</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Assistant Global Settings -->
+        <div class="ai-global-settings">
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="aiAssistant.enable">Enable AI Assistant</span>
+              <span class="setting-desc" data-i18n="aiAssistant.enableDesc">Allow AI features on desktop</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="enableAI" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <div class="ai-features" id="aiFeatures">
+          <!-- AI features will be loaded here -->
+        </div>
+
+        <!-- AI Settings Modal -->
+        <div id="aiSettingsModal" class="modal-overlay" style="display: none;">
+          <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+              <h3 id="aiSettingTitle" data-i18n="aiAssistant.settingsTitle">AI Settings</h3>
+              <button class="modal-close" onclick="closeAISettings()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="modal-body" id="aiSettingBody">
+              <!-- AI specific settings loaded here -->
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="settings-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="settings.title">Settings</h2>
+          <p class="panel-subtitle" data-i18n="settings.general">General</p>
+        </div>
+        <div class="settings-list">
+          <!-- Language Selection -->
+          <div class="setting-item">
+            <div>
+              <span class="setting-name" data-i18n="settings.language">Language</span>
+              <span class="setting-desc" data-i18n="settings.languageDesc">Select application language</span>
+            </div>
+            <div class="language-selector">
+              <button class="lang-btn" data-lang="ru" title="Русский" onclick="changeLanguage('ru')">
+                <span class="lang-flag">🇷🇺</span>
+                <span class="lang-name">RU</span>
+              </button>
+              <button class="lang-btn" data-lang="en" title="English" onclick="changeLanguage('en')">
+                <span class="lang-flag">🇬🇧</span>
+                <span class="lang-name">EN</span>
+              </button>
+            </div>
+          </div>
+          <!-- Auto-start -->
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="settings.autoStart">Auto Start</span>
+              <span class="setting-desc" data-i18n="settings.autoStartDesc">Launch app on system startup</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="autoStart" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <!-- Replace Desktop -->
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="settings.replaceDesktop">Replace Desktop</span>
+              <span class="setting-desc" data-i18n="settings.replaceDesktopDesc">Hide Windows desktop icons and use iTop boxes</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="replaceDesktop">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <!-- System Tray -->
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="settings.showTray">Show in System Tray</span>
+              <span class="setting-desc" data-i18n="settings.showTrayDesc">Keep application running in system tray</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="showTray" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <!-- About -->
+          <div class="setting-item">
+            <div>
+              <span class="setting-name" data-i18n="settings.about">About</span>
+              <span class="setting-desc">
+                <span data-i18n="settings.version">Version</span>: 1.0.0
+              </span>
+            </div>
+            <button class="action-button" id="checkUpdateBtn" data-i18n="settings.checkUpdate">Check for Update</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Options Panel -->
+      <div class="panel" id="options-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="options.title">Options</h2>
+          <p class="panel-subtitle" data-i18n="options.subtitle">Application settings and preferences</p>
+        </div>
+
+        <!-- Check for Updates -->
+        <div class="options-section">
+          <h3 class="section-title" data-i18n="options.updates">Updates</h3>
+          <div class="update-row">
+            <div class="update-info">
+              <span class="update-version"><span data-i18n="options.currentVersion">Current Version</span>: 1.0.0</span>
+              <span class="update-status" id="updateStatus" data-i18n="options.upToDate">Up to date</span>
+            </div>
+            <button class="action-button" onclick="checkForUpdates()">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                <polyline points="21 12 16 7 21 12"/>
+              </svg>
+              <span data-i18n="options.checkForUpdates">Check for Updates</span>
+            </button>
+          </div>
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="options.autoCheckUpdates">Auto-check for Updates</span>
+              <span class="setting-desc" data-i18n="options.autoCheckUpdatesDesc">Automatically check for updates on startup</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="autoCheckUpdates" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Feedback -->
+        <div class="options-section">
+          <h3 class="section-title" data-i18n="options.feedback">Feedback</h3>
+          <div class="feedback-section">
+            <p class="feedback-desc" data-i18n="options.feedbackDesc">Help us improve by sending feedback and error reports</p>
+            <div class="feedback-actions">
+              <button class="action-button" onclick="sendFeedback()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span data-i18n="options.sendFeedback">Send Feedback</span>
+              </button>
+              <button class="action-button secondary" onclick="reportBug()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span data-i18n="options.reportBug">Report a Bug</span>
+              </button>
+              <button class="action-button secondary" onclick="requestFeature()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span data-i18n="options.requestFeature">Request Feature</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Data & Privacy -->
+        <div class="options-section">
+          <h3 class="section-title" data-i18n="options.data">Data & Privacy</h3>
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="options.analytics">Usage Analytics</span>
+              <span class="setting-desc" data-i18n="options.analyticsDesc">Help improve the app by sending anonymous usage data</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="usageAnalytics">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="options.crashReports">Crash Reports</span>
+              <span class="setting-desc" data-i18n="options.crashReportsDesc">Automatically send crash reports to developers</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="crashReports" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <button class="action-button secondary" onclick="exportMyData()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            <span data-i18n="options.exportData">Export My Data</span>
+          </button>
+        </div>
+
+        <!-- Advanced -->
+        <div class="options-section">
+          <h3 class="section-title" data-i18n="options.advanced">Advanced</h3>
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="options.hardwareAcceleration">Hardware Acceleration</span>
+              <span class="setting-desc" data-i18n="options.hardwareAccelerationDesc">Use GPU for better performance</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="hardwareAcceleration" checked>
+              <span class="slider"></span>
+            </label>
+          </div>
+          <div class="setting-item toggle">
+            <div>
+              <span class="setting-name" data-i18n="options.runAsAdmin">Run as Administrator</span>
+              <span class="setting-desc" data-i18n="options.runAsAdminDesc">Require administrator privileges (requires restart)</span>
+            </div>
+            <label class="switch">
+              <input type="checkbox" id="runAsAdmin">
+              <span class="slider"></span>
+            </label>
+          </div>
+          <button class="action-button secondary" onclick="resetSettings()">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+              <path d="M3 3v5h5"/>
+            </svg>
+            <span data-i18n="options.resetSettings">Reset to Default Settings</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Account Panel -->
+      <div class="panel" id="account-panel">
+        <div class="panel-header">
+          <h2 class="panel-title" data-i18n="account.title">Account</h2>
+          <p class="panel-subtitle" data-i18n="account.subtitle">Manage your account and subscription</p>
+        </div>
+
+        <!-- Not Logged In State -->
+        <div id="notLoggedIn" class="account-state">
+          <div class="account-welcome">
+            <div class="account-icon">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <h3 data-i18n="account.welcomeTitle">Welcome to iTop Easy Desktop Clone</h3>
+            <p data-i18n="account.welcomeDesc">Sign in to sync your settings, access Pro features, and more</p>
+          </div>
+
+          <div class="auth-buttons">
+            <button class="auth-btn primary" onclick="openSignUp()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <line x1="20" y1="8" x2="20" y2="14"/>
+                <line x1="23" y1="11" x2="17" y2="11"/>
+              </svg>
+              <span data-i18n="account.signUp">Sign Up</span>
+            </button>
+            <button class="auth-btn secondary" onclick="openLogin()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10 17 15 12 10 7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
+              <span data-i18n="account.logIn">Log In</span>
+            </button>
+          </div>
+
+          <div class="social-login">
+            <p class="social-title" data-i18n="account.continueWith">Or continue with</p>
+            <div class="social-buttons">
+              <button class="social-btn google" onclick="loginWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                </svg>
+                <span data-i18n="account.google">Google</span>
+              </button>
+              <button class="social-btn microsoft" onclick="loginWithMicrosoft()">
+                <svg width="18" height="18" viewBox="0 0 24 24">
+                  <path fill="#F25022" d="M1 1h10v10H1z"/>
+                  <path fill="#00A4EF" d="M1 13h10v10H1z"/>
+                  <path fill="#7FBA00" d="M13 1h10v10H13z"/>
+                  <path fill="#FFB900" d="M13 13h10v10H13z"/>
+                </svg>
+                <span data-i18n="account.microsoft">Microsoft</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Logged In State -->
+        <div id="loggedIn" class="account-state" style="display: none;">
+          <div class="account-header">
+            <div class="account-avatar">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="account-info">
+              <h3 id="accountName">User Name</h3>
+              <p id="accountEmail">user@example.com</p>
+              <span class="account-badge" id="accountBadge" data-i18n="account.free">Free</span>
+            </div>
+          </div>
+
+          <!-- Subscription Status -->
+          <div class="subscription-section">
+            <h4 class="subsection-title" data-i18n="account.subscription">Subscription</h4>
+            <div class="subscription-card" id="subscriptionCard">
+              <div class="subscription-info">
+                <span class="subscription-name" data-i18n="account.freePlan">Free Plan</span>
+                <span class="subscription-status" data-i18n="account.active">Active</span>
+              </div>
+              <button class="action-button" onclick="upgradeToPro()">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                </svg>
+                <span data-i18n="account.upgradeToPro">Upgrade to Pro</span>
+              </button>
+            </div>
+            <div class="pro-features-preview">
+              <h5 data-i18n="account.proFeaturesTitle">Pro Features:</h5>
+              <ul>
+                <li data-i18n="account.proFeatureUnlimitedBoxes">✓ Unlimited Boxes</li>
+                <li data-i18n="account.proFeaturePrivateBox">✓ Private Box with Password</li>
+                <li data-i18n="account.proFeaturePersonalization">✓ Full Personalization</li>
+                <li data-i18n="account.proFeatureWallpapers">✓ Premium Wallpapers</li>
+                <li data-i18n="account.proFeatureSupport">✓ Priority Support</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Account Actions -->
+          <div class="account-actions">
+            <h4 class="subsection-title" data-i18n="account.settingsTitle">Account Settings</h4>
+            <button class="account-action-btn" onclick="changePassword()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+              </svg>
+              <span data-i18n="account.changePassword">Change Password</span>
+            </button>
+            <button class="account-action-btn" onclick="manageSubscription()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                <line x1="1" y1="10" x2="23" y2="10"/>
+              </svg>
+              <span data-i18n="account.manageSubscription">Manage Subscription</span>
+            </button>
+            <button class="account-action-btn" onclick="openActivateProModal()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span data-i18n="account.activatePro">Activate Pro License</span>
+            </button>
+            <button class="account-action-btn" onclick="forgotPassword()">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+              </svg>
+              <span data-i18n="account.forgotPassword">Forgot Password</span>
+            </button>
+          </div>
+
+          <!-- API Key Input Section (Admin) -->
+          <div class="api-key-section" id="apiKeySection" style="display: none;">
+            <h4 class="subsection-title" data-i18n="account.adminActivationTitle">Administrator PRO Activation</h4>
+            <div class="api-key-input-wrapper">
+              <div class="form-group">
+                <label class="form-label" data-i18n="account.adminKeyLabel">Enter Admin API Key</label>
+                <input type="password" class="form-input api-key-input" id="adminApiKeyInput" placeholder="ITOP-XXXX-XXXX-XXXX-XXXXXXXX" data-i18n="account.adminKeyPlaceholder">
+              </div>
+              <button class="action-button" onclick="activateProWithApiKey()" style="margin-top: 12px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                </svg>
+                <span data-i18n="account.activateProButton">Activate PRO</span>
+              </button>
+              <button class="action-button secondary" onclick="deactivateProLicense()" style="margin-top: 8px;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                  <polyline points="16 17 21 12 16 7"/>
+                  <line x1="21" y1="12" x2="9" y2="12"/>
+                </svg>
+                <span data-i18n="account.deactivatePro">Deactivate PRO</span>
+              </button>
+              <p class="api-key-hint" data-i18n="account.adminHint">Hint: Press Ctrl+Shift+A 5 times to reveal this section</p>
+            </div>
+          </div>
+
+          <!-- Logout -->
+          <button class="logout-btn" onclick="logout()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+              <polyline points="16 17 21 12 16 7"/>
+              <line x1="21" y1="12" x2="9" y2="12"/>
+            </svg>
+            <span data-i18n="account.logOut">Log Out</span>
+          </button>
+        </div>
+
+        <!-- Auth Modal -->
+        <div id="authModal" class="modal-overlay" style="display: none;">
+          <div class="modal-content" style="max-width: 400px;">
+            <div class="modal-header">
+              <h3 id="authModalTitle" data-i18n="account.authTitleSignIn">Sign In</h3>
+              <button class="modal-close" onclick="closeAuthModal()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                </svg>
+              </button>
+            </div>
+            <div class="modal-body">
+              <div id="authForm">
+                <!-- Auth form loaded here -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="i18n.js"></script>
+  <script src="api-key.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
+
+ 
+ 
