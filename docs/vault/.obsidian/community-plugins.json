@@ -6,12 +6,5 @@
   "excalidraw",
   "obsidian-kanban",
   "obsidian-tasks-plugin",
-  "obsidian-admonition",
-  "obsidian-linter",
-  "obsidian-ollama",
-  "obsidian-smart-connections",
-  "obsidian-mind-map",
-  "obsidian-table-editor",
-  "obsidian-checklist-plugin",
-  "obsidian-timelines"
+  "obsidian-linter"
 ]
