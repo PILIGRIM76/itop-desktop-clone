@@ -52,3 +52,6 @@ venv/
 .branches
 .temp
 .secrets
+
+# Obsidian vault (duplicate - main vault at F:\Obsidian_Vaults\iTop-Easy-Desktop)
+docs/vault/
