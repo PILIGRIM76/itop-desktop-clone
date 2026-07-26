@@ -6,7 +6,7 @@
   "link-date-to-daily-note": false,
   "date-format": "YYYY-MM-DD",
   "hide-date-in-title": false,
-  "show-checkboxes": false,
+  "show-checkboxes": true,
   "hide-tags-in-title": true,
   "hide-tags-display": false,
   "tag-colors": [
@@ -19,6 +19,16 @@
       "tagKey": "#done",
       "color": "#2ecc71",
       "backgroundColor": "rgba(46, 204, 113, 0.2)"
+    },
+    {
+      "tagKey": "#in-progress",
+      "color": "#f39c12",
+      "backgroundColor": "rgba(243, 156, 18, 0.2)"
+    },
+    {
+      "tagKey": "#blocked",
+      "color": "#9b59b6",
+      "backgroundColor": "rgba(155, 89, 182, 0.2)"
     }
   ]
 }

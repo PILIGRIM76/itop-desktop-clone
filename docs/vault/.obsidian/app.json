@@ -15,5 +15,6 @@
   "promptDelete": true,
   "showUnsupportedFiles": false,
   "showInlineTitle": true,
-  "showViewHeader": true
+  "showViewHeader": true,
+  "defaultViewMode": "preview"
 }

@@ -1,6 +1,6 @@
 {
-  "autoSaveMessage": "vault auto-save",
-  "autoPullMessage": "vault auto-pull",
+  "autoSaveMessage": "vault: auto-save {{date}}",
+  "autoPullMessage": "vault: auto-pull {{date}}",
   "autoPull": false,
   "autoPullOnBoot": false,
   "pullBeforePush": false,
@@ -8,7 +8,7 @@
   "pullBeforeBackup": false,
   "autoBackup": true,
   "autoBackupInterval": 30,
-  "backupLatestMessage": "vault backup",
+  "backupLatestMessage": "vault: backup {{date}}",
   "disablePopups": false,
   "listChangedFilesInMessageBody": true,
   "showChangesInStatusBar": true,
@@ -21,6 +21,6 @@
   "addAckHeader": false,
   "addSignatureHeader": false,
   "signature": "",
-  "automaticallyPushOnBackup": false,
+  "automaticallyPushOnBackup": true,
   "gitPath": "git"
 }

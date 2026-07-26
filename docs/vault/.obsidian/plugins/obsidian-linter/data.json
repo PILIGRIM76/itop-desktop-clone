@@ -1,8 +1,11 @@
 {
-  "lintOnSave": false,
+  "lintOnSave": true,
   "lintOnFileContentChange": false,
   "displayMessageOnLintOnSave": false,
-  "foldersToIgnore": [],
+  "foldersToIgnore": [
+    ".obsidian",
+    "node_modules"
+  ],
   "filesToIgnore": [],
   "headerIncrements": 1,
   "minimumHeaderLevel": 1,
@@ -12,9 +15,9 @@
   "footer": "",
   "lineBreakStyle": "unix",
   "ruleEnabled": {
-    "yaml-key-sort": false,
+    "yaml-key-sort": true,
     "yaml-key-remove-quotes": false,
-    "yaml-timestamp": false,
+    "yaml-timestamp": true,
     "yaml-convert-links": false,
     "paragraph-blank-lines": true,
     "blank-lines-before-headings": true,

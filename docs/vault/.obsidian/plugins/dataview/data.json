@@ -7,7 +7,7 @@
   "dataviewJsKeyword": "dataviewjs",
   "tableIdColumnName": "File",
   "tableGroupColumnName": "Group",
-  "warnOnEmptyResult": true,
+  "warnOnEmptyResult": false,
   "refreshEnabled": true,
   "refreshInterval": 2500,
   "maxRecursiveRenderDepth": 20,

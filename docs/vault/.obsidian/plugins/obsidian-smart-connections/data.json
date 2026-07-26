@@ -1,0 +1,13 @@
+{
+  "api_key": "",
+  "model": "text-embedding-3-small",
+  "file_exclusions": ".git,.obsidian,node_modules",
+  "folder_exclusions": "",
+  "show_in_file_explorer": false,
+  "enable_chat": true,
+  "chat_model": "",
+  "chat_context_size": 30,
+  "language": "en",
+  "smart_chat_context": true,
+  "show_usage_in_status_bar": false
+}

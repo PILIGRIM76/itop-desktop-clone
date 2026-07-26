@@ -1,7 +1,7 @@
 {
   "templates_folder": "Templates",
   "templates_pairs": [["", ""]],
-  "trigger_on_file_creation": false,
+  "trigger_on_file_creation": true,
   "auto_jump_to_cursor": true,
   "enable_system_command_templates": false,
   "shell_path": "",
@@ -15,6 +15,10 @@
     {
       "folder": "Daily",
       "template": "Templates/daily-note"
+    },
+    {
+      "folder": "02-Areas/Security",
+      "template": "Templates/bug-report"
     }
   ],
   "syntax_highlighting": true,

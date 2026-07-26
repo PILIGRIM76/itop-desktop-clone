@@ -40,6 +40,20 @@
         "availableAsCommand": true,
         "type": "CANCELLED",
         "name": "Cancelled"
+      },
+      {
+        "symbol": "!",
+        "nextStatusSymbol": "x",
+        "availableAsCommand": true,
+        "type": "TODO",
+        "name": "Important"
+      },
+      {
+        "symbol": "?",
+        "nextStatusSymbol": " ",
+        "availableAsCommand": true,
+        "type": "TODO",
+        "name": "Question"
       }
     ]
   }
