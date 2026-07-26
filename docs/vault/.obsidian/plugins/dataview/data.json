@@ -1,0 +1,19 @@
+{
+  "enableDataviewJs": true,
+  "enableInlineDataviewJs": true,
+  "enableInlineFieldQueries": true,
+  "enableDataviewJsInCodeblocks": true,
+  "prettyRenderFields": true,
+  "dataviewJsKeyword": "dataviewjs",
+  "tableIdColumnName": "File",
+  "tableGroupColumnName": "Group",
+  "warnOnEmptyResult": true,
+  "refreshEnabled": true,
+  "refreshInterval": 2500,
+  "maxRecursiveRenderDepth": 20,
+  "tableResultsLimit": 5000,
+  "taskCompletionTracking": true,
+  "taskCompletionUseEmojiShorthand": false,
+  "taskCompletionText": "completion",
+  "recursiveSubTaskCompletion": false
+}

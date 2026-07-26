@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Folder Portal</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: rgba(32, 32, 32, 0.95);
+      color: #fff;
+      border-radius: 12px;
+      overflow: hidden;
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .portal {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      align-items: center;
+      padding: 12px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 10px;
+    }
+
+    .header .folder-icon {
+      width: 24px;
+      height: 24px;
+      color: #ffd43b;
+    }
+
+    .header .folder-name {
+      flex: 1;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header .path {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 300px;
+    }
+
+    .header-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.7);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+    }
+
+    .header-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .header-btn svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    /* Breadcrumb */
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      padding: 6px 16px;
+      background: rgba(0, 0, 0, 0.2);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      gap: 4px;
+      overflow-x: auto;
+    }
+
+    .breadcrumb::-webkit-scrollbar { height: 0; }
+
+    .breadcrumb-item {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      padding: 2px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }
+
+    .breadcrumb-item:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
+
+    .breadcrumb-item.active {
+      color: #fff;
+      font-weight: 500;
+    }
+
+    .breadcrumb-sep {
+      color: rgba(255, 255, 255, 0.3);
+      font-size: 10px;
+    }
+
+    /* File list */
+    .file-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px;
+    }
+
+    .file-list::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .file-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .file-list::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .file-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      gap: 12px;
+      transition: background 0.15s;
+    }
+
+    .file-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .file-item.selected {
+      background: rgba(0, 120, 212, 0.3);
+    }
+
+    .file-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .file-icon svg {
+      width: 28px;
+      height: 28px;
+    }
+
+    .file-icon.folder svg { color: #ffd43b; }
+    .file-icon.file svg { color: #868e96; }
+    .file-icon.image svg { color: #51cf66; }
+    .file-icon.video svg { color: #cc5de8; }
+    .file-icon.audio svg { color: #ff922b; }
+    .file-icon.archive svg { color: #ff6b6b; }
+    .file-icon.exe svg { color: #339af0; }
+
+    .file-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .file-name {
+      font-size: 13px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .file-meta {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      margin-top: 2px;
+    }
+
+    .file-size {
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.4);
+      white-space: nowrap;
+    }
+
+    /* Status bar */
+    .status-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    /* Empty state */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      color: rgba(255, 255, 255, 0.4);
+      gap: 12px;
+    }
+
+    .empty-state svg {
+      width: 48px;
+      height: 48px;
+      opacity: 0.3;
+    }
+
+    /* Animations */
+    .file-item { animation: fadeIn 0.15s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; } }
+  </style>
+</head>
+<body>
+  <div class="portal">
+    <!-- Header -->
+    <div class="header">
+      <svg class="folder-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/>
+      </svg>
+      <span class="folder-name" id="folderName">Папка</span>
+      <span class="path" id="folderPath"></span>
+      <button class="header-btn" id="upBtn" title="На уровень выше">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 19V5M5 12l7-7 7 7"/>
+        </svg>
+      </button>
+      <button class="header-btn" id="homeBtn" title="На рабочий стол">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+        </svg>
+      </button>
+      <button class="header-btn" id="refreshBtn" title="Обновить">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/>
+          <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+      </button>
+      <button class="header-btn" id="changeBtn" title="Изменить папку">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb" id="breadcrumb"></div>
+
+    <!-- File list -->
+    <div class="file-list" id="fileList"></div>
+
+    <!-- Status bar -->
+    <div class="status-bar">
+      <span id="itemCount">0 элементов</span>
+      <span id="totalSize"></span>
+    </div>
+  </div>
+
+  <script>
+    // Состояние
+    let currentPath = '';
+    let files = [];
+
+    // DOM
+    const folderName = document.getElementById('folderName');
+    const folderPath = document.getElementById('folderPath');
+    const breadcrumb = document.getElementById('breadcrumb');
+    const fileList = document.getElementById('fileList');
+    const itemCount = document.getElementById('itemCount');
+    const totalSize = document.getElementById('totalSize');
+
+    // Иконки по типам
+    const icons = {
+      folder: `<svg viewBox="0 0 24 24" fill="currentColor"><path d="M10 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2h-8l-2-2z"/></svg>`,
+      file: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+      image: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>`,
+      video: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/></svg>`,
+      audio: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>`,
+      archive: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/></svg>`,
+      exe: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M9 9l6 6M15 9l-6 6"/></svg>`
+    };
+
+    // Расширения
+    const extensions = {
+      image: ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.svg', '.webp', '.ico'],
+      video: ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm'],
+      audio: ['.mp3', '.wav', '.flac', '.aac', '.ogg', '.wma'],
+      archive: ['.zip', '.rar', '.7z', '.tar', '.gz', '.bz2'],
+      exe: ['.exe', '.msi', '.bat', '.cmd', '.ps1']
+    };
+
+    // Инициализация
+    document.addEventListener('DOMContentLoaded', () => {
+      // Получаем путь из URL параметров
+      const params = new URLSearchParams(window.location.search);
+      currentPath = params.get('path') || process.env.USERPROFILE || 'C:\\Users';
+
+      loadFolder(currentPath);
+      initEventListeners();
+    });
+
+    // Загрузка папки
+    async function loadFolder(folderPath) {
+      try {
+        if (window.electronAPI && window.electronAPI.getFolderContents) {
+          files = await window.electronAPI.getFolderContents(folderPath);
+        } else {
+          files = [];
+        }
+
+        currentPath = folderPath;
+        folderName.textContent = folderPath.split('\\').pop() || folderPath;
+        folderPath_el.textContent = folderPath;
+
+        renderBreadcrumb();
+        renderFiles();
+        updateStatus();
+      } catch (e) {
+        console.error('Failed to load folder:', e);
+        fileList.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg><div>Ошибка загрузки папки</div></div>';
+      }
+    }
+
+    // Отрисовка breadcrumb
+    function renderBreadcrumb() {
+      const parts = currentPath.split('\\').filter(Boolean);
+      breadcrumb.innerHTML = '';
+
+      parts.forEach((part, i) => {
+        if (i > 0) {
+          const sep = document.createElement('span');
+          sep.className = 'breadcrumb-sep';
+          sep.textContent = '›';
+          breadcrumb.appendChild(sep);
+        }
+
+        const item = document.createElement('span');
+        item.className = 'breadcrumb-item' + (i === parts.length - 1 ? ' active' : '');
+        item.textContent = part;
+        item.onclick = () => {
+          const path = parts.slice(0, i + 1).join('\\');
+          loadFolder(path);
+        };
+        breadcrumb.appendChild(item);
+      });
+    }
+
+    // Отрисовка файлов
+    function renderFiles() {
+      if (files.length === 0) {
+        fileList.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg><div>Папка пуста</div></div>';
+        return;
+      }
+
+      // Сортировка: папки primero, потом файлы
+      const sorted = [...files].sort((a, b) => {
+        if (a.isDirectory && !b.isDirectory) return -1;
+        if (!a.isDirectory && b.isDirectory) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      fileList.innerHTML = sorted.map(file => {
+        const type = getFileType(file);
+        const icon = file.isDirectory ? icons.folder : (icons[type] || icons.file);
+        const iconClass = file.isDirectory ? 'folder' : type;
+        const size = file.isDirectory ? '' : formatSize(file.size);
+        const date = file.modified ? new Date(file.modified).toLocaleDateString('ru-RU') : '';
+
+        return `
+          <div class="file-item" data-path="${escapeHtml(file.path)}" data-isdir="${file.isDirectory}">
+            <div class="file-icon ${iconClass}">${icon}</div>
+            <div class="file-info">
+              <div class="file-name">${escapeHtml(file.name)}</div>
+              <div class="file-meta">${date}</div>
+            </div>
+            <div class="file-size">${size}</div>
+          </div>
+        `;
+      }).join('');
+
+      // Обработчики кликов
+      fileList.querySelectorAll('.file-item').forEach(item => {
+        item.addEventListener('dblclick', () => {
+          const path = item.dataset.path;
+          const isDir = item.dataset.isdir === 'true';
+
+          if (isDir) {
+            loadFolder(path);
+          } else {
+            // Открыть файл
+            if (window.electronAPI && window.electronAPI.openFile) {
+              window.electronAPI.openFile(path);
+            }
+          }
+        });
+      });
+    }
+
+    // Тип файла
+    function getFileType(file) {
+      if (file.isDirectory) return 'folder';
+      const ext = require('path').extname(file.name).toLowerCase();
+      for (const [type, exts] of Object.entries(extensions)) {
+        if (exts.includes(ext)) return type;
+      }
+      return 'file';
+    }
+
+    // Форматирование размера
+    function formatSize(bytes) {
+      if (!bytes) return '';
+      const units = ['Б', 'КБ', 'МБ', 'ГБ'];
+      let i = 0;
+      let size = bytes;
+      while (size >= 1024 && i < units.length - 1) {
+        size /= 1024;
+        i++;
+      }
+      return `${size.toFixed(1)} ${units[i]}`;
+    }
+
+    // Статус
+    function updateStatus() {
+      const dirs = files.filter(f => f.isDirectory).length;
+      const fileCount = files.length - dirs;
+      itemCount.textContent = `${dirs} папок, ${fileCount} файлов`;
+    }
+
+    // Экранирование HTML
+    function escapeHtml(text) {
+      const div = document.createElement('div');
+      div.textContent = text;
+      return div.innerHTML;
+    }
+
+    // События
+    function initEventListeners() {
+      document.getElementById('upBtn').onclick = () => {
+        const parent = currentPath.split('\\').slice(0, -1).join('\\');
+        if (parent) loadFolder(parent);
+      };
+
+      document.getElementById('homeBtn').onclick = () => {
+        loadFolder(process.env.USERPROFILE || 'C:\\Users');
+      };
+
+      document.getElementById('refreshBtn').onclick = () => {
+        loadFolder(currentPath);
+      };
+
+      document.getElementById('changeBtn').onclick = async () => {
+        if (window.electronAPI && window.electronAPI.selectFolder) {
+          const folder = await window.electronAPI.selectFolder();
+          if (folder) loadFolder(folder);
+        }
+      };
+    }
+  </script>
+</body>
+</html>

@@ -70,6 +70,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getBoxItems: (boxId) => ipcRenderer.invoke('get-box-items', boxId),
   addItemsToBox: (boxId, items) => ipcRenderer.invoke('add-items-to-box', boxId, items),
   removeItemFromBox: (boxId, itemPath) => ipcRenderer.invoke('remove-item-from-box', boxId, itemPath),
+  renameFile: (oldPath, newName) => ipcRenderer.invoke('rename-file', oldPath, newName),
   getFolderFiles: (folderPath) => ipcRenderer.invoke('get-folder-files', folderPath),
   applyBoxRules: (mode) => ipcRenderer.invoke('apply-box-rules', mode),
   sortBoxItems: (mode) => ipcRenderer.invoke('sort-box-items', mode),
@@ -210,6 +211,58 @@ contextBridge.exposeInMainWorld('electronAPI', {
   accountGetSnapshots: () => ipcRenderer.invoke('account-get-snapshots'),
   accountDeleteSnapshot: (snapshotId) => ipcRenderer.invoke('account-delete-snapshot', snapshotId),
   accountUpdateProfile: (updates) => ipcRenderer.invoke('account-update-profile', updates),
+
+  // Start Menu
+  toggleStartMenu: () => ipcRenderer.invoke('start-menu:toggle'),
+  closeStartMenu: () => ipcRenderer.invoke('start-menu:close'),
+  getStartMenuApps: () => ipcRenderer.invoke('start-menu:get-apps'),
+  searchStartMenuApps: (query) => ipcRenderer.invoke('start-menu:search', query),
+  launchStartMenuApp: (appPath) => ipcRenderer.invoke('start-menu:launch-app', appPath),
+  getPinnedApps: () => ipcRenderer.invoke('start-menu:get-pinned'),
+  togglePinApp: (appPath) => ipcRenderer.invoke('start-menu:toggle-pin', appPath),
+  powerAction: (action) => ipcRenderer.invoke('start-menu:power', action),
+  getUserName: () => ipcRenderer.invoke('start-menu:get-user-name'),
+  openFolder: (folderPath) => ipcRenderer.invoke('start-menu:open-folder', folderPath),
+  onStartMenuToggle: (callback) => {
+    ipcRenderer.on('start-menu-toggled', (event, isOpen) => callback(isOpen));
+  },
+
+  // Folder Portal
+  getFolderContents: (folderPath) => ipcRenderer.invoke('get-folder-contents', folderPath),
+  selectFolder: () => ipcRenderer.invoke('select-folder'),
+  openFolderInExplorer: (folderPath) => ipcRenderer.invoke('open-folder-in-explorer', folderPath),
+
+  // Double-click to Hide All Boxes
+  toggleAllBoxes: () => ipcRenderer.invoke('toggle-all-boxes'),
+  getBoxesVisibility: () => ipcRenderer.invoke('get-boxes-visibility'),
+  onBoxesVisibilityChanged: (callback) => {
+    ipcRenderer.on('boxes-visibility-changed', (event, visible) => callback(visible));
+  },
+
+  // New File Detection
+  startFileWatcher: (folderPath) => ipcRenderer.invoke('start-file-watcher', folderPath),
+  stopFileWatcher: (folderPath) => ipcRenderer.invoke('stop-file-watcher', folderPath),
+  onNewFileDetected: (callback) => {
+    ipcRenderer.on('new-file-detected', (event, data) => callback(data));
+  },
+
+  // Lock Screen Wallpaper
+  setLockScreenWallpaper: (imagePath) => ipcRenderer.invoke('set-lock-screen-wallpaper', imagePath),
+  getLockScreenWallpaper: () => ipcRenderer.invoke('get-lock-screen-wallpaper'),
+
+  // System Information
+  getSystemInfo: () => ipcRenderer.invoke('get-system-info'),
+
+  // Open File/Folder
+  openInExplorer: (itemPath) => ipcRenderer.invoke('open-in-explorer', itemPath),
+  openExternal: (url) => ipcRenderer.invoke('open-external', url),
+
+  // Desktop Icons Manager
+  getIconsStyle: () => ipcRenderer.invoke('get-icons-style'),
+  setIconsStyle: (styleId) => ipcRenderer.invoke('set-icons-style', styleId),
+  setDesktopIconsVisible: (visible) => ipcRenderer.invoke('set-desktop-icons-visible', visible),
+  refreshDesktopIcons: () => ipcRenderer.invoke('refresh-desktop-icons'),
+  getIconsInfo: () => ipcRenderer.invoke('get-icons-info'),
 
   // Платформа
   platform: process.platform

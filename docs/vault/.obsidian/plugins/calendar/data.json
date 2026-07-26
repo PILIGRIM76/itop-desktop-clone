@@ -1,0 +1,8 @@
+{
+  "shouldConfirmBeforeCreate": false,
+  "showWeeklyNote": false,
+  "weekStart": "monday",
+  "wordsPerDot": 250,
+  "showFileDecorationInFileExplorer": true,
+  "showICSFileDecoration": false
+}

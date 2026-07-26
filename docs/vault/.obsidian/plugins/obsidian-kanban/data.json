@@ -1,0 +1,24 @@
+{
+  "new-note-folder": "00-Inbox",
+  "new-note-template": "",
+  "prepend-archive-separator": false,
+  "prepend-archive-format": "",
+  "link-date-to-daily-note": false,
+  "date-format": "YYYY-MM-DD",
+  "hide-date-in-title": false,
+  "show-checkboxes": false,
+  "hide-tags-in-title": true,
+  "hide-tags-display": false,
+  "tag-colors": [
+    {
+      "tagKey": "#urgent",
+      "color": "#e74c3c",
+      "backgroundColor": "rgba(231, 76, 60, 0.2)"
+    },
+    {
+      "tagKey": "#done",
+      "color": "#2ecc71",
+      "backgroundColor": "rgba(46, 204, 113, 0.2)"
+    }
+  ]
+}

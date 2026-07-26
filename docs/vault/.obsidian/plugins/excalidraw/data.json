@@ -1,0 +1,21 @@
+{
+  "theme": "dark",
+  "exportWithTheme": true,
+  "exportWithDarkTheme": true,
+  "exportBackground": true,
+  "exportPadding": 20,
+  "maxWidth": 800,
+  "maxHeight": 800,
+  "exportScale": 1,
+  "showLinkBrackets": true,
+  "allowUngroup": true,
+  "defaultVectorImageType": "arrow",
+  "defaultElementColors": {
+    "strokeColor": "#ffffff",
+    "backgroundColor": "transparent",
+    "fillStyle": "solid",
+    "strokeWidth": 2,
+    "roughness": 1,
+    "opacity": 100
+  }
+}

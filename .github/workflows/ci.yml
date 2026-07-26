@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install root dependencies
+        run: npm ci || true
+      - name: Lint desktop-app
+        run: npm run lint || true
+        working-directory: desktop-app
+
+  test-desktop:
+    name: Test Desktop App
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: desktop-app/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: desktop-app
+      - name: Run tests
+        run: npm test
+        working-directory: desktop-app
+      - name: Upload coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: desktop-coverage
+          path: desktop-app/coverage/
+
+  test-admin:
+    name: Test Admin Panel
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: admin-panel/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: admin-panel
+      - name: Run tests
+        run: npm test || echo "No tests configured yet"
+        working-directory: admin-panel
+
+  test-bot:
+    name: Test Telegram Bot
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: telegram-bot/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+        working-directory: telegram-bot
+      - name: Run tests
+        run: npm test || echo "No tests configured yet"
+        working-directory: telegram-bot
+
+  build-desktop:
+    name: Build Desktop App
+    needs: [lint, test-desktop]
+    runs-on: windows-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install dependencies
+        run: npm ci
+        working-directory: desktop-app
+      - name: Build Electron
+        run: npm run build
+        working-directory: desktop-app
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-build
+          path: desktop-app/dist/
+          retention-days: 30

@@ -723,6 +723,9 @@ function setupEventListeners() {
   document.addEventListener('click', () => {
     if (state.contextMenu) {
       state.contextMenu = null;
+      // Удаляем контекстное меню из DOM
+      const menu = document.getElementById('contextMenu');
+      if (menu) menu.remove();
       renderBoxes();
     }
   });
@@ -1335,18 +1338,6 @@ function renderContextMenu() {
     </button>
   `;
   document.body.appendChild(menu);
-  
-  // Add submenu hover functionality
-  const submenuToggle = menu.querySelector('.submenu-toggle');
-  if (submenuToggle) {
-    const submenuContent = menu.querySelector('.context-menu-submenu-content');
-    submenuToggle.addEventListener('mouseenter', () => {
-      submenuContent.style.display = 'block';
-    });
-    menu.addEventListener('mouseleave', () => {
-      submenuContent.style.display = 'none';
-    });
-  }
 }
 
 // Edit box from context menu
@@ -1912,7 +1903,22 @@ window.openWidgetOnDesktop = async (widgetId) => {
 function renderAIFeatures() {
   if (!elements.aiFeatures) return;
 
-  elements.aiFeatures.innerHTML = state.aiFeatures.map(feature => `
+  const featureTranslations = {
+    'chat-ai': { name: 'aiAssistant.chatAI', desc: 'aiAssistant.chatAIDesc' },
+    'search': { name: 'aiAssistant.search', desc: 'aiAssistant.searchDesc' },
+    'screenshot': { name: 'aiAssistant.screenshot', desc: 'aiAssistant.screenshotDesc' }
+  };
+
+  elements.aiFeatures.innerHTML = state.aiFeatures.map(feature => {
+    const trans = featureTranslations[feature.id];
+    const nameKey = trans ? trans.name : null;
+    const descKey = trans ? trans.desc : null;
+    const featureName = nameKey ? t(nameKey) : feature.name;
+    const featureDesc = descKey ? t(descKey) : feature.description;
+    const nameAttr = nameKey ? ` data-i18n="${nameKey}"` : '';
+    const descAttr = descKey ? ` data-i18n="${descKey}"` : '';
+
+    return `
     <div class="ai-feature-card ${feature.enabled ? 'enabled' : ''}" data-feature-id="${feature.id}">
       <div class="feature-glow" style="background: ${feature.gradient};"></div>
       <div class="feature-content">
@@ -1923,8 +1929,8 @@ function renderAIFeatures() {
             </svg>
           </div>
           <div class="feature-info">
-            <span class="feature-name" data-i18n="aiAssistant.${feature.id}">${feature.name}</span>
-            <span class="feature-description" data-i18n="aiAssistant.${feature.id}Desc">${feature.description}</span>
+            <span class="feature-name"${nameAttr}>${featureName}</span>
+            <span class="feature-description"${descAttr}>${featureDesc}</span>
           </div>
           <label class="switch">
             <input type="checkbox" ${feature.enabled ? 'checked' : ''} data-feature="${feature.id}">
@@ -1970,7 +1976,8 @@ function renderAIFeatures() {
         ` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 
   // Feature toggle listeners
   document.querySelectorAll('[data-feature]').forEach(toggle => {
@@ -2049,12 +2056,90 @@ window.createBoxByDrawing = async () => {
 };
 
 window.createBoxFromContextMenu = () => {
-  alert('Right-click on desktop and select "Create Box" from context menu.');
+  console.log('Right-click on desktop and select "Create Box" from context menu.');
 };
 
 window.createBoxForSelected = () => {
   alert('Select icons on desktop first, then use this option to create a box for them.');
 };
+
+// ========================================
+// FOLDER PORTAL FUNCTIONS
+// ========================================
+
+window.createFolderPortal = async () => {
+  try {
+    if (!window.electronAPI) {
+      alert('Electron API not available');
+      return;
+    }
+
+    // Выбрать папку
+    const folderPath = await window.electronAPI.selectFolder();
+    if (!folderPath) return;
+
+    // Создать Folder Portal бокс
+    const folderName = folderPath.split('\\').pop() || folderPath;
+    const newBox = {
+      id: 'portal-' + Date.now().toString(),
+      name: folderName,
+      type: 'folder-portal',
+      folderPath: folderPath,
+      icon: 'folder',
+      color: '#ffd43b',
+      items: [],
+      rules: [],
+      layoutMode: 'grid',
+      width: 300,
+      height: 400
+    };
+
+    state.boxes.push(newBox);
+    syncBoxesConfig();
+    renderBoxes();
+
+    console.log('Folder Portal created:', folderPath);
+  } catch (error) {
+    console.error('Error creating Folder Portal:', error);
+  }
+};
+
+// ========================================
+// DOUBLE-CLICK TO HIDE ALL BOXES
+// ========================================
+
+let boxesHidden = false;
+
+document.addEventListener('dblclick', (e) => {
+  // Проверяем что клик был по рабочему столу (не по боксу или виджету)
+  if (e.target === document.body || e.target.classList.contains('desktop-area')) {
+    boxesHidden = !boxesHidden;
+
+    // Скрыть/показать все боксы
+    const boxes = document.querySelectorAll('.box-window, .box-container');
+    boxes.forEach(box => {
+      box.style.display = boxesHidden ? 'none' : '';
+    });
+
+    // Уведомить main process
+    if (window.electronAPI && window.electronAPI.toggleAllBoxes) {
+      window.electronAPI.toggleAllBoxes();
+    }
+
+    console.log('Boxes visibility:', boxesHidden ? 'hidden' : 'visible');
+  }
+});
+
+// Слушатель изменения видимости из main process
+if (window.electronAPI && window.electronAPI.onBoxesVisibilityChanged) {
+  window.electronAPI.onBoxesVisibilityChanged((visible) => {
+    boxesHidden = !visible;
+    const boxes = document.querySelectorAll('.box-window, .box-container');
+    boxes.forEach(box => {
+      box.style.display = visible ? '' : 'none';
+    });
+  });
+}
 
 // ========================================
 // TAB MODE FUNCTIONS (объединение коробок во вкладки)
@@ -3976,18 +4061,31 @@ window.toggleWidgets = async () => {
 };
 
 window.openWidgetSettings = async (widgetId) => {
+  console.log('🔧 openWidgetSettings called with widgetId:', widgetId);
+  
   const widget = state.widgets.find(w => w.id === widgetId);
-  if (!widget) return;
+  if (!widget) {
+    console.error('❌ Widget not found:', widgetId);
+    return;
+  }
 
   // Загрузить настройки виджета
   let widgetSettings = {};
   if (window.electronAPI) {
     widgetSettings = await window.electronAPI.getWidgetSettings(widgetId);
+    console.log('📋 Loaded widget settings:', widgetSettings);
   }
 
   const modal = document.getElementById('widgetDetailsModal');
   const title = document.getElementById('widgetDetailTitle');
   const body = document.getElementById('widgetDetailBody');
+
+  console.log('🔍 Modal elements:', { modal, title, body });
+
+  if (!modal || !title || !body) {
+    console.error('❌ Modal elements not found!', { modal: !!modal, title: !!title, body: !!body });
+    return;
+  }
 
   title.textContent = `${widget.name} Settings`;
 
@@ -4297,6 +4395,12 @@ window.openWidgetSettings = async (widgetId) => {
 
   body.innerHTML = settingsHtml;
   modal.style.display = 'flex';
+  console.log('✅ Modal displayed:', modal.style.display);
+  
+  // Force bring to front
+  modal.style.zIndex = '9999';
+  console.log('🔍 Modal element:', modal);
+  console.log('🔍 Modal computed style:', window.getComputedStyle(modal).display);
 };
 
 // Сохранить настройки виджета

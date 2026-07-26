@@ -1,7 +1,10 @@
-﻿const { app, BrowserWindow, ipcMain, Tray, Menu, shell, screen, dialog, nativeImage } = require('electron');
+const { app, BrowserWindow, ipcMain, Tray, Menu, shell, screen, dialog, nativeImage } = require('electron');
 const path = require('path');
 const fs = require('fs').promises;
 const os = require('os');
+
+// Загрузка переменных окружения из .env
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
 // AI модули
 const aiClient = require('./ai-client');
@@ -51,7 +54,17 @@ const oauthServer = require('./oauth-server');
 // Account Manager модуль
 const accountManager = require('./account-manager');
 
+// App List Manager модуль (Start Menu)
+const appListManager = require('./app-list-manager');
+
+// Taskbar Hider модуль (реальное скрытие панели задач)
+const taskbarHider = require('./taskbar-hider');
+
+// Desktop Icons Manager модуль (замена системных иконок)
+const desktopIconsManager = require('./desktop-icons-manager');
+
 let mainWindow;
+let startMenuWindow = null;
 let tray;
 let isDesktopMode = false;
 let desktopBoxes = [];
@@ -1052,6 +1065,33 @@ ipcMain.handle('remove-item-from-box', async (event, boxId, itemPath) => {
   }
 
   return { success: true };
+});
+
+// Переименовать файл
+ipcMain.handle('rename-file', async (event, oldPath, newName) => {
+  try {
+    const dir = path.dirname(oldPath);
+    const newPath = path.join(dir, newName);
+
+    // Проверяем существует ли файл
+    await fs.access(oldPath);
+
+    // Проверяем не существует ли файл с новым именем
+    try {
+      await fs.access(newPath);
+      return { success: false, error: 'File with this name already exists' };
+    } catch (e) {
+      // Файл не существует - хорошо, можно переименовывать
+    }
+
+    // Переименовываем
+    await fs.rename(oldPath, newPath);
+
+    return { success: true, newPath };
+  } catch (error) {
+    console.error('Error renaming file:', error);
+    return { success: false, error: error.message };
+  }
 });
 
 // Получить файлы из папки (Folder Portal)
@@ -2369,9 +2409,14 @@ ipcMain.handle('get-cursor-html', async (event, config) => {
 // Native Windows IPC Handlers
 // ========================================
 
-// Скрыть системную Taskbar
+// Скрыть системную Taskbar (улучшенная версия)
 ipcMain.handle('hide-system-taskbar', async () => {
   try {
+    // Используем новый модуль taskbarHider
+    const result = taskbarHider.hideTaskbar();
+    if (result.success) return result;
+
+    // Fallback на старый модуль
     return nativeWindows.hideSystemTaskbar();
   } catch (error) {
     console.error('Error hiding taskbar:', error);
@@ -2379,9 +2424,12 @@ ipcMain.handle('hide-system-taskbar', async () => {
   }
 });
 
-// Показать системную Taskbar
+// Показать системную Taskbar (улучшенная версия)
 ipcMain.handle('show-system-taskbar', async () => {
   try {
+    const result = taskbarHider.showTaskbar();
+    if (result.success) return result;
+
     return nativeWindows.showSystemTaskbar();
   } catch (error) {
     console.error('Error showing taskbar:', error);
@@ -2389,9 +2437,12 @@ ipcMain.handle('show-system-taskbar', async () => {
   }
 });
 
-// Переключить Taskbar
+// Переключить Taskbar (улучшенная версия)
 ipcMain.handle('toggle-system-taskbar', async () => {
   try {
+    const result = taskbarHider.toggleTaskbar();
+    if (result.success) return result;
+
     return nativeWindows.toggleTaskbar();
   } catch (error) {
     console.error('Error toggling taskbar:', error);
@@ -3362,4 +3413,438 @@ ipcMain.handle('open-private-box-modal', async (event, type) => {
   } catch (error) {
     return { success: false, error: error.message };
   }
+});
+
+// ========================================
+// Start Menu IPC Handlers
+// ========================================
+
+// Создание окна Start Menu
+function createStartMenuWindow() {
+  if (startMenuWindow) {
+    startMenuWindow.focus();
+    return;
+  }
+
+  const { width: screenWidth, height: screenHeight } = screen.getPrimaryDisplay().workAreaSize;
+
+  startMenuWindow = new BrowserWindow({
+    width: 600,
+    height: 580,
+    x: 0,
+    y: screenHeight - 580,
+    frame: false,
+    transparent: true,
+    resizable: false,
+    skipTaskbar: true,
+    alwaysOnTop: true,
+    show: false,
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, 'preload.js')
+    }
+  });
+
+  startMenuWindow.loadFile(path.join(__dirname, 'renderer', 'start-menu.html'));
+
+  // Скрыть при потере фокуса
+  startMenuWindow.on('blur', () => {
+    if (startMenuWindow && !startMenuWindow.isDestroyed()) {
+      startMenuWindow.hide();
+    }
+  });
+
+  startMenuWindow.on('closed', () => {
+    startMenuWindow = null;
+  });
+}
+
+// Toggle Start Menu
+ipcMain.handle('start-menu:toggle', async () => {
+  try {
+    if (!startMenuWindow) {
+      createStartMenuWindow();
+    }
+
+    if (startMenuWindow.isVisible()) {
+      startMenuWindow.hide();
+    } else {
+      startMenuWindow.show();
+      startMenuWindow.focus();
+    }
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error toggling start menu:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Close Start Menu
+ipcMain.handle('start-menu:close', async () => {
+  try {
+    if (startMenuWindow && !startMenuWindow.isDestroyed()) {
+      startMenuWindow.hide();
+    }
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Get all apps
+ipcMain.handle('start-menu:get-apps', async () => {
+  try {
+    const apps = await appListManager.getAllApps();
+    return apps;
+  } catch (error) {
+    console.error('Error getting apps:', error);
+    return [];
+  }
+});
+
+// Search apps
+ipcMain.handle('start-menu:search', async (event, query) => {
+  try {
+    const results = await appListManager.searchApps(query);
+    return results;
+  } catch (error) {
+    console.error('Error searching apps:', error);
+    return [];
+  }
+});
+
+// Launch app
+ipcMain.handle('start-menu:launch-app', async (event, appPath) => {
+  try {
+    const result = await appListManager.launchApp(appPath);
+    // Закрыть меню после запуска
+    if (startMenuWindow && !startMenuWindow.isDestroyed()) {
+      startMenuWindow.hide();
+    }
+    return { success: result };
+  } catch (error) {
+    console.error('Error launching app:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Get pinned apps
+ipcMain.handle('start-menu:get-pinned', async () => {
+  try {
+    const pinned = await appListManager.getPinnedApps();
+    return pinned;
+  } catch (error) {
+    console.error('Error getting pinned apps:', error);
+    return [];
+  }
+});
+
+// Toggle pin app
+ipcMain.handle('start-menu:toggle-pin', async (event, appPath) => {
+  try {
+    const isPinned = await appListManager.togglePin(appPath);
+    return { success: true, isPinned };
+  } catch (error) {
+    console.error('Error toggling pin:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Power action
+ipcMain.handle('start-menu:power', async (event, action) => {
+  try {
+    const result = await appListManager.powerAction(action);
+    if (startMenuWindow && !startMenuWindow.isDestroyed()) {
+      startMenuWindow.hide();
+    }
+    return { success: result };
+  } catch (error) {
+    console.error('Error executing power action:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// Get user name
+ipcMain.handle('start-menu:get-user-name', async () => {
+  try {
+    return os.userInfo().username;
+  } catch (error) {
+    return 'User';
+  }
+});
+
+// Open folder
+ipcMain.handle('start-menu:open-folder', async (event, folderPath) => {
+  try {
+    await shell.openPath(folderPath);
+    if (startMenuWindow && !startMenuWindow.isDestroyed()) {
+      startMenuWindow.hide();
+    }
+    return { success: true };
+  } catch (error) {
+    console.error('Error opening folder:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+// ========================================
+// Folder Portal IPC Handlers
+// ========================================
+
+// Get folder contents
+ipcMain.handle('get-folder-contents', async (event, folderPath) => {
+  try {
+    const items = await fs.readdir(folderPath, { withFileTypes: true });
+    const contents = [];
+
+    for (const item of items) {
+      try {
+        const fullPath = path.join(folderPath, item.name);
+        const stats = await fs.stat(fullPath);
+
+        contents.push({
+          name: item.name,
+          path: fullPath,
+          isDirectory: item.isDirectory(),
+          size: stats.size,
+          modified: stats.mtime,
+          created: stats.birthtime
+        });
+      } catch (e) {
+        // Skip inaccessible items
+      }
+    }
+
+    return contents;
+  } catch (error) {
+    console.error('Error reading folder:', error);
+    return [];
+  }
+});
+
+// Open folder in explorer
+ipcMain.handle('open-folder-in-explorer', async (event, folderPath) => {
+  try {
+    await shell.openPath(folderPath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ========================================
+// Double-click to Hide All Boxes
+// ========================================
+
+let boxesVisible = true;
+
+ipcMain.handle('toggle-all-boxes', async () => {
+  try {
+    boxesVisible = !boxesVisible;
+
+    // Отправляем событие всем окнам боксов
+    if (mainWindow) {
+      mainWindow.webContents.send('boxes-visibility-changed', boxesVisible);
+    }
+
+    // Уведомляем все окна боксов
+    const allWindows = BrowserWindow.getAllWindows();
+    for (const win of allWindows) {
+      if (win !== mainWindow && win !== startMenuWindow && !win.isDestroyed()) {
+        win.webContents.send('boxes-visibility-changed', boxesVisible);
+      }
+    }
+
+    return { success: true, visible: boxesVisible };
+  } catch (error) {
+    console.error('Error toggling boxes:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-boxes-visibility', async () => {
+  return boxesVisible;
+});
+
+// ========================================
+// New File Detection
+// ========================================
+
+const watchedFolders = new Map();
+
+ipcMain.handle('start-file-watcher', async (event, folderPath) => {
+  try {
+    if (watchedFolders.has(folderPath)) return { success: true };
+
+    const watcher = fs.watch(folderPath, (eventType, filename) => {
+      if (eventType === 'rename' && filename) {
+        // Новый файл обнаружен
+        if (mainWindow) {
+          mainWindow.webContents.send('new-file-detected', {
+            folder: folderPath,
+            file: filename,
+            timestamp: Date.now()
+          });
+        }
+      }
+    });
+
+    watchedFolders.set(folderPath, watcher);
+    return { success: true };
+  } catch (error) {
+    console.error('Error starting file watcher:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('stop-file-watcher', async (event, folderPath) => {
+  try {
+    const watcher = watchedFolders.get(folderPath);
+    if (watcher) {
+      watcher.close();
+      watchedFolders.delete(folderPath);
+    }
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ========================================
+// Lock Screen Wallpaper
+// ========================================
+
+const { execSync } = require('child_process');
+
+ipcMain.handle('set-lock-screen-wallpaper', async (event, imagePath) => {
+  try {
+    // Копируем изображение в папку Windows
+    const lockScreenPath = path.join(os.homedir(), 'AppData', 'Local', 'Packages', 'Microsoft.Windows.ContentDeliveryManager_cw5n1h2txyewy', 'LocalState', 'Assets');
+
+    // Используем PowerShell для установки обоев экрана блокировки
+    const psCommand = `
+      $ImagePath = '${imagePath.replace(/'/g, "''")}'
+      $RegistryPath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PersonalizationCSP'
+      New-Item -Path $RegistryPath -Force | Out-Null
+      New-ItemProperty -Path $RegistryPath -Name 'LockScreenImagePath' -Value $ImagePath -PropertyType String -Force | Out-Null
+      New-ItemProperty -Path $RegistryPath -Name 'LockScreenImageUrl' -Value $ImagePath -PropertyType String -Force | Out-Null
+      New-ItemProperty -Path $RegistryPath -Name 'LockScreenImageStatus' -Value 1 -PropertyType DWORD -Force | Out-Null
+    `;
+
+    execSync(`powershell -Command "${psCommand}"`, { timeout: 10000 });
+
+    console.log('Lock screen wallpaper set:', imagePath);
+    return { success: true };
+  } catch (error) {
+    console.error('Error setting lock screen wallpaper:', error);
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('get-lock-screen-wallpaper', async () => {
+  try {
+    const psCommand = `
+      $RegistryPath = 'HKCU:\\Software\\Microsoft\\Windows\\CurrentVersion\\PersonalizationCSP'
+      if (Test-Path $RegistryPath) {
+        $Path = (Get-ItemProperty -Path $RegistryPath -Name 'LockScreenImagePath' -ErrorAction SilentlyContinue).LockScreenImagePath
+        if ($Path) { $Path } else { '' }
+      } else { '' }
+    `;
+
+    const result = execSync(`powershell -Command "${psCommand}"`, { timeout: 5000, encoding: 'utf-8' }).trim();
+    return result || null;
+  } catch (error) {
+    return null;
+  }
+});
+
+// ========================================
+// System Information
+// ========================================
+
+ipcMain.handle('get-system-info', async () => {
+  try {
+    return {
+      platform: os.platform(),
+      release: os.release(),
+      arch: os.arch(),
+      hostname: os.hostname(),
+      username: os.userInfo().username,
+      totalMemory: os.totalmem(),
+      freeMemory: os.freemem(),
+      cpus: os.cpus().length
+    };
+  } catch (error) {
+    return { error: error.message };
+  }
+});
+
+// ========================================
+// Open File/Folder
+// ========================================
+
+ipcMain.handle('open-in-explorer', async (event, itemPath) => {
+  try {
+    await shell.showItemInFolder(itemPath);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+ipcMain.handle('open-external', async (event, url) => {
+  try {
+    await shell.openExternal(url);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// ========================================
+// Desktop Icons Manager
+// ========================================
+
+// Получить текущий стиль иконок
+ipcMain.handle('get-icons-style', async () => {
+  try {
+    return desktopIconsManager.getCurrentStyle();
+  } catch (error) {
+    return { error: error.message };
+  }
+});
+
+// Применить стиль иконок
+ipcMain.handle('set-icons-style', async (event, styleId) => {
+  try {
+    return await desktopIconsManager.applyIconStyle(styleId);
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Обновить иконки
+ipcMain.handle('refresh-desktop-icons', async () => {
+  try {
+    desktopIconsManager.refreshIcons();
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+});
+
+// Получить информацию о доступных стилях
+ipcMain.handle('get-icons-info', async () => {
+  try {
+    return desktopIconsManager.getIconsInfo();
+  } catch (error) {
+    return { error: error.message };
+  }
+});
+
+// Инициализация конфигурации иконок при запуске
+app.whenReady().then(async () => {
+  await desktopIconsManager.loadConfig();
 });

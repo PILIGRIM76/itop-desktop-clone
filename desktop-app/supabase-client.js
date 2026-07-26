@@ -5,10 +5,9 @@
 
 const { createClient } = require('@supabase/supabase-js');
 
-// Конфигурация Supabase
-// Настроено: 11 марта 2026 г.
-const SUPABASE_URL = 'https://wwqhsmckvmfquezfsyds.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_-ohfdIC9yMQMUzXJ54cKTg_GNDXnNgm';
+// Конфигурация Supabase из переменных окружения
+const SUPABASE_URL = process.env.SUPABASE_URL || '';
+const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY || '';
 
 // Глобальный клиент Supabase
 let supabaseClient = null;

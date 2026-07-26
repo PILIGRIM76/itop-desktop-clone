@@ -12,6 +12,8 @@
       "personalization": "Personalization",
       "widgets": "Widgets",
       "aiAssistant": "AI Assistant",
+      "options": "Options",
+      "account": "Account",
       "settings": "Settings",
       "desktopMode": "Desktop Mode"
     },
@@ -99,12 +101,14 @@
       "rulesFor": "Rules for",
       "addNewRule": "Add New Rule",
       "ruleName": "Rule Name",
+      "ruleNamePlaceholder": "e.g., Documents",
       "fileType": "File Type",
       "byExtension": "By Extension",
       "byName": "By Name Pattern",
       "bySize": "By Size",
       "byDate": "By Date",
       "patternValue": "Pattern/Value",
+      "patternPlaceholder": "e.g., .doc, .pdf, report*",
       "priority": "Priority",
       "high": "High",
       "medium": "Medium",
@@ -430,6 +434,10 @@
       "english": "English",
       "autoStart": "Auto Start",
       "autoStartDesc": "Launch app on system startup",
+      "replaceDesktop": "Replace Desktop",
+      "replaceDesktopDesc": "Hide Windows desktop icons and use iTop boxes",
+      "showTray": "Show in System Tray",
+      "showTrayDesc": "Keep application running in system tray",
       "checkUpdates": "Check for Updates",
       "checkUpdatesDesc": "Automatically check for new versions",
       "theme": "Theme",
@@ -446,6 +454,7 @@
       "ok": "OK",
       "yes": "Yes",
       "no": "No",
+      "or": "or",
       "close": "Close",
       "open": "Open",
       "create": "Create",
@@ -524,6 +533,10 @@
       "deactivatePro": "Deactivate PRO",
       "adminHint": "Hint: Press Ctrl+Shift+A 5 times to reveal this section",
       "authTitleSignIn": "Sign In",
+      "email": "Email",
+      "licenseKey": "License Key",
+      "pro": "Pro",
+      "adminKeyDesc": "Enter your Pro license key or administrator API key to unlock all PRO features.",
       "name": "Full Name",
       "namePlaceholder": "John Doe",
       "emailPlaceholder": "john@example.com",
@@ -545,6 +558,7 @@
     "privateBox": {
       "createTitle": "Create Private Box",
       "createSubtitle": "Protect your files with password",
+      "createPrivateBox": "Create Box",
       "boxName": "Box Name",
       "boxNamePlaceholder": "My Private Box",
       "email": "Email (for recovery)",
@@ -656,12 +670,59 @@
         "organization": "Organization",
         "quickActions": "Quick Actions",
         "layout": "Layout",
-        "snapshot": "Snapshot"
+        "snapshot": "Snapshot",
+        "tabMode": "Tab Mode"
       },
+      "title": "Boxes",
+      "subtitle": "Organize your desktop with customizable boxes",
+      "enableBoxes": "Enable Boxes",
+      "addBox": "Add a Box",
+      "createNewBox": "Create New Box",
+      "deleteBox": "Delete Box",
+      "deleteConfirm": "Are you sure you want to delete this box? This action cannot be undone and all items in this box will be unassigned.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "rename": "Rename",
+      "changeIcon": "Change Icon",
+      "duplicate": "Duplicate",
+      "itemsCount": "items",
+      "boxesCount": "boxes",
+      "searchPlaceholder": "Search boxes...",
       "fromPanel": "From Panel",
       "drawRectangle": "Draw Rectangle",
       "contextMenu": "Context Menu",
-      "forSelectedIcons": "For Selected Icons"
+      "forSelectedIcons": "For Selected Icons",
+      "folderPortal": "Folder Portal",
+      "folderPortalDesc": "Create a portal to access a folder directly from desktop",
+      "createFolderPortal": "Create Folder Portal",
+      "privateBox": "Private Box",
+      "privateBoxTitle": "Protect your private files with password",
+      "privateBoxDesc": "Only 1 private box per account. Password recovery via email.",
+      "createPrivateBox": "Create Private Box",
+      "proBadge": "PRO",
+      "freeAccountLimit": "Free accounts: 3 boxes max. Upgrade to Pro for unlimited boxes.",
+      "chooseIcon": "Choose an Icon",
+      "chooseIconDesc": "Select an icon for your box. Double-click to apply.",
+      "searchIcons": "Search icons...",
+      "box1Name": "Programs",
+      "box2Name": "Folders",
+      "box3Name": "Files & Documents",
+      "tabMode": "Tab Mode",
+      "tabModeDesc": "Merge boxes into tabs for compact organization",
+      "createTab": "Create Tab",
+      "existingTabs": "Existing Tabs",
+      "mergeBoxesIntoTab": "Merge Boxes into Tab",
+      "merge": "Merge",
+      "tabSettings": "Tab Settings",
+      "autoCollapseTabs": "Auto-collapse inactive tabs",
+      "autoCollapseTabsDesc": "Minimize tabs when not in use",
+      "showTabIcons": "Show box icons in tab headers",
+      "showTabIconsDesc": "Display icons alongside box names",
+      "tabName": "Tab Name",
+      "noTabsYet": "No tabs yet. Create your first tab!",
+      "tabBoxesCount": "{count} boxes",
+      "selectFirstBox": "Select first box...",
+      "selectSecondBox": "Select second box..."
     },
     "personalization": {
       "title": "Personalization",
@@ -697,6 +758,9 @@
     },
     "boxWindow": {
       "title": "Desktop Box",
+      "settings": "Settings",
+      "close": "Close",
+      "defaultName": "Box",
       "settingsTitle": "Box Settings",
       "boxColor": "Box Color",
       "transparency": "Transparency",
@@ -704,6 +768,21 @@
       "name": "Name",
       "dropFilesHere": "Drop files here",
       "dropFilesToAdd": "Drop files to add to box",
+      "filesHidden": "Files hidden",
+      "noItems": "No items in this box",
+      "folderEmpty": "Folder is empty",
+      "addingFiles": "Adding {count} file(s)...",
+      "privateBoxLocked": "Private Box is locked. Please unlock it first.",
+      "errorAddingFiles": "Error adding files",
+      "context": {
+        "settings": "Settings",
+        "color": "Color",
+        "transparency": "Transparency",
+        "hideFiles": "Hide files",
+        "showFiles": "Files",
+        "openInApp": "Open in app",
+        "close": "Close"
+      },
       "layoutMode": "Layout Mode",
       "listView": "List View",
       "gridView": "Grid View"
@@ -714,6 +793,39 @@
       "close": "Close",
       "refresh": "Refresh",
       "defaultTitle": "Widget",
+      "appearance": "Appearance",
+      "clockStyle": "Clock Style",
+      "showSeconds": "Show Seconds",
+      "showDate": "Show Date",
+      "location": "Location",
+      "enterCityName": "City",
+      "temperatureUnit": "Unit",
+      "cityPlaceholder": "Moscow",
+      "celsius": "Celsius (°C)",
+      "fahrenheit": "Fahrenheit (°F)",
+      "reminders": "Reminders",
+      "reminderTime": "Reminder",
+      "fontSize": "Font Size",
+      "sizeSmall": "Small (12px)",
+      "sizeMedium": "Medium (14px)",
+      "sizeLarge": "Large (16px)",
+      "sizeExtraLarge": "Extra Large (18px)",
+      "defaultNoteColor": "Color",
+      "timer": "Timer",
+      "workDuration": "Work (min)",
+      "shortBreak": "Break (min)",
+      "visibleTools": "Visible Tools",
+      "aiModel": "AI Model",
+      "selectModel": "Model",
+      "common": "Common",
+      "color": "Color",
+      "minutesBefore": "{value} min before",
+      "hourBefore": "1 hour before",
+      "model": {
+        "gpt35": "GPT-3.5 Turbo",
+        "gpt4": "GPT-4",
+        "claude": "Claude"
+      },
       "titles": {
         "clock": "Clock",
         "weather": "Weather",
@@ -724,6 +836,8 @@
         "chatAI": "Chat AI"
       },
       "clockLoading": "Loading time...",
+      "clockDigital": "Digital",
+      "clockAnalog": "Analog",
       "weatherPartlyCloudy": "Partly Cloudy",
       "weatherHumidity": "Humidity: {value}%",
       "weatherWind": "Wind: {value} m/s",
@@ -755,9 +869,19 @@
         "placeholder": "Type your message...",
         "thinking": "AI is thinking...",
         "noKeyTitle": "⚠️ No API Key Set",
-        "noKeyDesc": "To enable real AI responses, please set your API key in Settings > AI Assistant."
+        "noKeyDesc": "To enable real AI responses, please set your API key in Settings > AI Assistant.",
+        "errorPrefix": "Error: ",
+        "errorFallback": "Failed to get AI response"
       },
-      "quickActionAlert": "Opening {action}..."
+      "quickActionAlert": "Opening {action}...",
+      "context": {
+        "settingsTitle": "Widget Settings",
+        "transparency": "Transparency",
+        "refresh": "Refresh",
+        "settings": "Settings",
+        "close": "Close",
+        "fullSettings": "Full Settings"
+      }
     },
     "wallpaperCreator": {
       "title": "Wallpaper Creator",
@@ -796,7 +920,13 @@
       "trailColor": "Trail Color",
       "preview": "Preview",
       "reset": "Reset",
-      "generateSave": "Generate & Save"
+      "generateSave": "Generate & Save",
+      "notification": {
+        "saved": "Wallpaper saved!",
+        "error": "Error: ",
+        "reset": "Settings reset to default",
+        "apiUnavailable": "Electron API not available"
+      }
     },
     "privateBoxWindow": {
       "title": "Private Box",
@@ -804,12 +934,64 @@
       "unlock": "Unlock Private Box",
       "recovery": "Password Recovery"
     },
+    "auth": {
+      "title": "iTop Account",
+      "subtitle": "Sign in to sync your desktop settings",
+      "tab": {
+        "signIn": "Sign In",
+        "signUp": "Sign Up"
+      },
+      "label": {
+        "email": "Email",
+        "password": "Password",
+        "fullName": "Full Name"
+      },
+      "placeholder": {
+        "email": "your@email.com",
+        "password": "••••••••",
+        "name": "John Doe",
+        "passwordMin": "At least 8 characters"
+      },
+      "rememberMe": "Remember me",
+      "forgotPassword": "Forgot password?",
+      "orContinue": "or continue with",
+      "google": "Google",
+      "agreeTermsPrefix": "I agree to the",
+      "terms": "Terms & Conditions",
+      "createAccount": "Create Account",
+      "signInButton": "Sign In",
+      "haveAccount": "Already have an account?",
+      "noAccount": "Don't have an account?",
+      "sendResetLink": "Send Reset Link",
+      "backToSignIn": "← Back to Sign In",
+      "loading": {
+        "signIn": "Signing in...",
+        "signUp": "Creating account...",
+        "reset": "Sending..."
+      },
+      "message": {
+        "signInSuccess": "Successfully signed in! Closing window...",
+        "signInError": "Failed to sign in",
+        "signUpSuccess": "Account created! Please check your email to confirm.",
+        "signUpError": "Failed to create account",
+        "resetSuccess": "Password reset email sent! Check your inbox.",
+        "resetError": "Failed to send reset email",
+        "genericError": "An error occurred",
+        "googleNotConfigured": "Google Sign In is not configured yet",
+        "alreadySignedIn": "Already signed in as {email}"
+      }
+    },
     "messages": {
       "saved": "Saved successfully!",
       "deleted": "Deleted successfully!",
       "error": "An error occurred",
       "confirmDelete": "Are you sure you want to delete?",
       "restartRequired": "Application restart required"
+    },
+    "admin": {
+      "revealed": "Administrator PRO Activation section revealed!\n\nEnter your admin API key to unlock all PRO features.",
+      "proActivated": "PRO activated successfully!",
+      "invalidKey": "Invalid API key"
     }
   },
   "ru": {
@@ -825,6 +1007,8 @@
       "personalization": "Персонализация",
       "widgets": "Виджеты",
       "aiAssistant": "AI Ассистент",
+      "options": "Опции",
+      "account": "Аккаунт",
       "settings": "Настройки",
       "desktopMode": "Режим рабочего стола"
     },
@@ -835,7 +1019,8 @@
         "organization": "Организация",
         "quickActions": "Быстрые действия",
         "layout": "Макет",
-        "snapshot": "Снимок"
+        "snapshot": "Снимок",
+        "tabMode": "Режим вкладок"
       },
       "title": "Боксы",
       "subtitle": "Организуйте рабочий стол с настраиваемыми боксами",
@@ -871,15 +1056,22 @@
       "box1Name": "Программы",
       "box2Name": "Папки",
       "box3Name": "Файлы и документы",
-      "tabMode": {
-        "mergeIntoTab": "Объединить во вкладку",
-        "addTab": "Добавить вкладку",
-        "splitTab": "Разделить в бокс",
-        "renameTab": "Переименовать вкладку",
-        "changeTabIcon": "Изменить иконку вкладки",
-        "newTabName": "Вкладка {number}",
-        "itemsCount": "{count} элементов"
-      }
+      "tabMode": "Режим вкладок",
+      "tabModeDesc": "Объединяйте боксы во вкладки для компактной организации",
+      "createTab": "Создать вкладку",
+      "existingTabs": "Существующие вкладки",
+      "mergeBoxesIntoTab": "Объединить боксы во вкладку",
+      "merge": "Объединить",
+      "tabSettings": "Настройки вкладок",
+      "autoCollapseTabs": "Автосворачивание неактивных вкладок",
+      "autoCollapseTabsDesc": "Сворачивать вкладки, когда они не используются",
+      "showTabIcons": "Показывать иконки боксов в заголовках вкладок",
+      "showTabIconsDesc": "Отображать иконки рядом с названиями боксов",
+      "tabName": "Название вкладки",
+      "noTabsYet": "Пока нет вкладок. Создайте первую вкладку!",
+      "tabBoxesCount": "{count} боксов",
+      "selectFirstBox": "Выберите первый бокс...",
+      "selectSecondBox": "Выберите второй бокс..."
     },
     "appearance": {
       "title": "Внешний вид",
@@ -912,12 +1104,14 @@
       "rulesFor": "Правила для",
       "addNewRule": "Добавить новое правило",
       "ruleName": "Название правила",
+      "ruleNamePlaceholder": "например, Документы",
       "fileType": "Тип файла",
       "byExtension": "По расширению",
       "byName": "По шаблону имени",
       "bySize": "По размеру",
       "byDate": "По дате",
       "patternValue": "Шаблон/Значение",
+      "patternPlaceholder": "например, .doc, .pdf, отчет*",
       "priority": "Приоритет",
       "high": "Высокий",
       "medium": "Средний",
@@ -1264,6 +1458,10 @@
       "english": "English",
       "autoStart": "Автозапуск",
       "autoStartDesc": "Запускать приложение при старте системы",
+      "replaceDesktop": "Заменить рабочий стол",
+      "replaceDesktopDesc": "Скрыть иконки Windows и использовать боксы iTop",
+      "showTray": "Показывать в трее",
+      "showTrayDesc": "Держать приложение в системном трее",
       "checkUpdates": "Проверка обновлений",
       "checkUpdatesDesc": "Автоматически проверять новые версии",
       "theme": "Тема",
@@ -1280,6 +1478,7 @@
       "ok": "OK",
       "yes": "Да",
       "no": "Нет",
+      "or": "или",
       "close": "Закрыть",
       "open": "Открыть",
       "create": "Создать",
@@ -1358,6 +1557,10 @@
       "deactivatePro": "Деактивировать PRO",
       "adminHint": "Подсказка: нажмите Ctrl+Shift+A 5 раз, чтобы открыть этот раздел",
       "authTitleSignIn": "Вход",
+      "email": "Email",
+      "licenseKey": "Лицензионный ключ",
+      "pro": "Pro",
+      "adminKeyDesc": "Введите лицензионный ключ Pro или административный API ключ, чтобы открыть все PRO функции.",
       "name": "Полное имя",
       "namePlaceholder": "Иван Иванов",
       "emailPlaceholder": "ivan@example.com",
@@ -1379,6 +1582,7 @@
     "privateBox": {
       "createTitle": "Создать приватный бокс",
       "createSubtitle": "Защитите ваши файлы паролем",
+      "createPrivateBox": "Создать бокс",
       "boxName": "Название бокса",
       "boxNamePlaceholder": "Мой приватный бокс",
       "email": "Email (для восстановления)",
@@ -1485,6 +1689,9 @@
     },
     "boxWindow": {
       "title": "Бокс рабочего стола",
+      "settings": "Настройки",
+      "close": "Закрыть",
+      "defaultName": "Бокс",
       "settingsTitle": "Настройки бокса",
       "boxColor": "Цвет бокса",
       "transparency": "Прозрачность",
@@ -1492,6 +1699,21 @@
       "name": "Название",
       "dropFilesHere": "Перетащите файлы сюда",
       "dropFilesToAdd": "Перетащите файлы для добавления в бокс",
+      "filesHidden": "Файлы скрыты",
+      "noItems": "В этом боксе нет элементов",
+      "folderEmpty": "Папка пуста",
+      "addingFiles": "Добавление {count} файл(ов)...",
+      "privateBoxLocked": "Приватный бокс заблокирован. Сначала разблокируйте его.",
+      "errorAddingFiles": "Ошибка при добавлении файлов",
+      "context": {
+        "settings": "Настройки",
+        "color": "Цвет",
+        "transparency": "Прозрачность",
+        "hideFiles": "Скрыть файлы",
+        "showFiles": "Файлы",
+        "openInApp": "В приложении",
+        "close": "Закрыть"
+      },
       "layoutMode": "Режим макета",
       "listView": "Список",
       "gridView": "Сетка"
@@ -1502,6 +1724,39 @@
       "close": "Закрыть",
       "refresh": "Обновить",
       "defaultTitle": "Виджет",
+      "appearance": "Внешний вид",
+      "clockStyle": "Стиль часов",
+      "showSeconds": "Показывать секунды",
+      "showDate": "Показывать дату",
+      "location": "Местоположение",
+      "enterCityName": "Город",
+      "temperatureUnit": "Единица",
+      "cityPlaceholder": "Москва",
+      "celsius": "Цельсий (°C)",
+      "fahrenheit": "Фаренгейт (°F)",
+      "reminders": "Напоминания",
+      "reminderTime": "Напоминание",
+      "fontSize": "Размер шрифта",
+      "sizeSmall": "Маленький (12px)",
+      "sizeMedium": "Средний (14px)",
+      "sizeLarge": "Большой (16px)",
+      "sizeExtraLarge": "Очень большой (18px)",
+      "defaultNoteColor": "Цвет",
+      "timer": "Таймер",
+      "workDuration": "Работа (мин)",
+      "shortBreak": "Перерыв (мин)",
+      "visibleTools": "Видимые инструменты",
+      "aiModel": "Модель AI",
+      "selectModel": "Модель",
+      "common": "Общие",
+      "color": "Цвет",
+      "minutesBefore": "{value} мин до",
+      "hourBefore": "За 1 час",
+      "model": {
+        "gpt35": "GPT-3.5 Turbo",
+        "gpt4": "GPT-4",
+        "claude": "Claude"
+      },
       "titles": {
         "clock": "Часы",
         "weather": "Погода",
@@ -1512,6 +1767,8 @@
         "chatAI": "Chat AI"
       },
       "clockLoading": "Загрузка времени...",
+      "clockDigital": "Цифровые",
+      "clockAnalog": "Аналоговые",
       "weatherPartlyCloudy": "Переменная облачность",
       "weatherHumidity": "Влажность: {value}%",
       "weatherWind": "Ветер: {value} м/с",
@@ -1543,9 +1800,19 @@
         "placeholder": "Введите ваше сообщение...",
         "thinking": "AI думает...",
         "noKeyTitle": "⚠️ API ключ не установлен",
-        "noKeyDesc": "Для реальных AI ответов установите API ключ в Настройки > AI Assistant."
+        "noKeyDesc": "Для реальных AI ответов установите API ключ в Настройки > AI Assistant.",
+        "errorPrefix": "Ошибка: ",
+        "errorFallback": "Не удалось получить ответ от AI"
       },
-      "quickActionAlert": "Открытие: {action}"
+      "quickActionAlert": "Открытие: {action}",
+      "context": {
+        "settingsTitle": "Настройки виджета",
+        "transparency": "Прозрачность",
+        "refresh": "Обновить",
+        "settings": "Настройки",
+        "close": "Закрыть",
+        "fullSettings": "Полные настройки"
+      }
     },
     "wallpaperCreator": {
       "title": "Создатель обоев",
@@ -1584,7 +1851,13 @@
       "trailColor": "Цвет шлейфа",
       "preview": "Предпросмотр",
       "reset": "Сбросить",
-      "generateSave": "Создать и сохранить"
+      "generateSave": "Создать и сохранить",
+      "notification": {
+        "saved": "Обои сохранены!",
+        "error": "Ошибка: ",
+        "reset": "Настройки сброшены по умолчанию",
+        "apiUnavailable": "Electron API недоступен"
+      }
     },
     "privateBoxWindow": {
       "title": "Приватный бокс",
@@ -1592,12 +1865,64 @@
       "unlock": "Разблокировать приватный бокс",
       "recovery": "Восстановление пароля"
     },
+    "auth": {
+      "title": "Аккаунт iTop",
+      "subtitle": "Войдите, чтобы синхронизировать настройки рабочего стола",
+      "tab": {
+        "signIn": "Вход",
+        "signUp": "Регистрация"
+      },
+      "label": {
+        "email": "Email",
+        "password": "Пароль",
+        "fullName": "Полное имя"
+      },
+      "placeholder": {
+        "email": "ivan@example.com",
+        "password": "••••••••",
+        "name": "Иван Иванов",
+        "passwordMin": "Минимум 8 символов"
+      },
+      "rememberMe": "Запомнить меня",
+      "forgotPassword": "Забыли пароль?",
+      "orContinue": "или продолжите с",
+      "google": "Google",
+      "agreeTermsPrefix": "Я согласен с",
+      "terms": "Условиями использования",
+      "createAccount": "Создать аккаунт",
+      "signInButton": "Войти",
+      "haveAccount": "Уже есть аккаунт?",
+      "noAccount": "Нет аккаунта?",
+      "sendResetLink": "Отправить ссылку",
+      "backToSignIn": "← Назад ко входу",
+      "loading": {
+        "signIn": "Вход...",
+        "signUp": "Создание аккаунта...",
+        "reset": "Отправка..."
+      },
+      "message": {
+        "signInSuccess": "Вход выполнен! Окно будет закрыто...",
+        "signInError": "Не удалось войти",
+        "signUpSuccess": "Аккаунт создан! Проверьте email для подтверждения.",
+        "signUpError": "Не удалось создать аккаунт",
+        "resetSuccess": "Письмо для сброса пароля отправлено. Проверьте почту.",
+        "resetError": "Не удалось отправить письмо для сброса",
+        "genericError": "Произошла ошибка",
+        "googleNotConfigured": "Вход через Google пока не настроен",
+        "alreadySignedIn": "Вы уже вошли как {email}"
+      }
+    },
     "messages": {
       "saved": "Сохранено успешно!",
       "deleted": "Удалено успешно!",
       "error": "Произошла ошибка",
       "confirmDelete": "Вы уверены, что хотите удалить?",
       "restartRequired": "Требуется перезапуск приложения"
+    },
+    "admin": {
+      "revealed": "Секция администратора разблокирована!\n\nВведите административный API ключ, чтобы открыть все PRO функции.",
+      "proActivated": "PRO активирован успешно!",
+      "invalidKey": "Неверный API ключ"
     }
   }
 }

@@ -1,9 +1,9 @@
 // Supabase Client для админ-панели
 import { createClient } from '@supabase/supabase-js'
 
-// Конфигурация (та же что и в desktop-app)
-const SUPABASE_URL = 'https://wwqhsmckvmfquezfsyds.supabase.co'
-const SUPABASE_ANON_KEY = 'sb_publishable_-ohfdIC9yMQMUzXJ54cKTg_GNDXnNgm'
+// Конфигурация из переменных окружения (Vite)
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || ''
+const SUPABASE_ANON_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY || ''
 
 // Создание клиента
 export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {

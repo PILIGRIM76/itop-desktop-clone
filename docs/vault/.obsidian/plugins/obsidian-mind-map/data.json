@@ -1,0 +1,21 @@
+{
+  "colorFreezeLevel": 2,
+  "defaultColor": "#4C5CEF",
+  "downloadFileFormat": "png",
+  "exportFileExt": "mindmap",
+  "fade": false,
+  "fixTitle": true,
+  "headingLevel": 2,
+  "initialExpandLevel": 2,
+  "lineThickness": 2,
+  "maxLevel": 0,
+  "minLevel": 0,
+  "paddingX": 16,
+  "paddingY": 8,
+  "colorGroups": [
+    {
+      "pathRegex": ".*",
+      "color": "#4C5CEF"
+    }
+  ]
+}

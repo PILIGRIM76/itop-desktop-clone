@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>iTop Account</title>
+  <title data-i18n="auth.title">iTop Account</title>
   <style>
     * {
       margin: 0;
@@ -348,13 +348,13 @@
   <div class="auth-container">
     <div class="auth-header">
       <div class="auth-logo">🔐</div>
-      <h1 class="auth-title">iTop Account</h1>
-      <p class="auth-subtitle">Sign in to sync your desktop settings</p>
+      <h1 class="auth-title" data-i18n="auth.title">iTop Account</h1>
+      <p class="auth-subtitle" data-i18n="auth.subtitle">Sign in to sync your desktop settings</p>
     </div>
 
     <div class="auth-tabs">
-      <button class="auth-tab active" onclick="switchTab('signin')">Sign In</button>
-      <button class="auth-tab" onclick="switchTab('signup')">Sign Up</button>
+      <button class="auth-tab active" onclick="switchTab('signin')" data-i18n="auth.tab.signIn">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup')" data-i18n="auth.tab.signUp">Sign Up</button>
     </div>
 
     <!-- Error Message -->
@@ -366,30 +366,30 @@
     <!-- Sign In Form -->
     <form id="signInForm" class="auth-form active" onsubmit="handleSignIn(event)">
       <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" placeholder="your@email.com" id="signInEmail" required>
+        <label class="form-label" data-i18n="auth.label.email">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" data-i18n="auth.placeholder.email" id="signInEmail" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-input" placeholder="••••••••" id="signInPassword" required>
+        <label class="form-label" data-i18n="auth.label.password">Password</label>
+        <input type="password" class="form-input" placeholder="••••••••" data-i18n="auth.placeholder.password" id="signInPassword" required>
       </div>
 
       <div class="form-checkbox">
         <input type="checkbox" id="rememberMe">
-        <label for="rememberMe">Remember me</label>
+        <label for="rememberMe" data-i18n="auth.rememberMe">Remember me</label>
       </div>
 
       <button type="submit" class="auth-button" id="signInButton">
-        Sign In
+        <span data-i18n="auth.signInButton">Sign In</span>
       </button>
 
       <div class="auth-footer">
-        <button type="button" class="link-button" onclick="showResetPassword()">Forgot password?</button>
+        <button type="button" class="link-button" onclick="showResetPassword()" data-i18n="auth.forgotPassword">Forgot password?</button>
       </div>
 
       <div class="auth-divider">
-        <span>or continue with</span>
+        <span data-i18n="auth.orContinue">or continue with</span>
       </div>
 
       <div class="social-buttons">
@@ -400,7 +400,7 @@
             <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
             <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
           </svg>
-          Google
+          <span data-i18n="auth.google">Google</span>
         </button>
       </div>
     </form>
@@ -408,52 +408,69 @@
     <!-- Sign Up Form -->
     <form id="signUpForm" class="auth-form" onsubmit="handleSignUp(event)">
       <div class="form-group">
-        <label class="form-label">Full Name</label>
-        <input type="text" class="form-input" placeholder="John Doe" id="signUpName">
+        <label class="form-label" data-i18n="auth.label.fullName">Full Name</label>
+        <input type="text" class="form-input" placeholder="John Doe" data-i18n="auth.placeholder.name" id="signUpName">
       </div>
 
       <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" placeholder="your@email.com" id="signUpEmail" required>
+        <label class="form-label" data-i18n="auth.label.email">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" data-i18n="auth.placeholder.email" id="signUpEmail" required>
       </div>
 
       <div class="form-group">
-        <label class="form-label">Password</label>
-        <input type="password" class="form-input" placeholder="At least 8 characters" id="signUpPassword" required minlength="8">
+        <label class="form-label" data-i18n="auth.label.password">Password</label>
+        <input type="password" class="form-input" placeholder="At least 8 characters" data-i18n="auth.placeholder.passwordMin" id="signUpPassword" required minlength="8">
       </div>
 
       <div class="form-checkbox">
         <input type="checkbox" id="agreeTerms" required>
-        <label for="agreeTerms">I agree to the <a href="#" class="link-button" onclick="openTerms()">Terms & Conditions</a></label>
+        <label for="agreeTerms">
+          <span data-i18n="auth.agreeTermsPrefix">I agree to the</span>
+          <a href="#" class="link-button" onclick="openTerms()" data-i18n="auth.terms">Terms & Conditions</a>
+        </label>
       </div>
 
       <button type="submit" class="auth-button" id="signUpButton">
-        Create Account
+        <span data-i18n="auth.createAccount">Create Account</span>
       </button>
 
       <div class="auth-footer">
-        Already have an account? <button type="button" class="link-button" onclick="switchTab('signin')">Sign In</button>
+        <span data-i18n="auth.haveAccount">Already have an account?</span>
+        <button type="button" class="link-button" onclick="switchTab('signin')" data-i18n="auth.tab.signIn">Sign In</button>
       </div>
     </form>
 
     <!-- Reset Password Form -->
     <form id="resetPasswordForm" class="auth-form" onsubmit="handleResetPassword(event)">
       <div class="form-group">
-        <label class="form-label">Email</label>
-        <input type="email" class="form-input" placeholder="your@email.com" id="resetEmail" required>
+        <label class="form-label" data-i18n="auth.label.email">Email</label>
+        <input type="email" class="form-input" placeholder="your@email.com" data-i18n="auth.placeholder.email" id="resetEmail" required>
       </div>
 
       <button type="submit" class="auth-button" id="resetButton">
-        Send Reset Link
+        <span data-i18n="auth.sendResetLink">Send Reset Link</span>
       </button>
 
       <div class="auth-footer">
-        <button type="button" class="link-button" onclick="switchTab('signin')">← Back to Sign In</button>
+        <button type="button" class="link-button" onclick="switchTab('signin')" data-i18n="auth.backToSignIn">← Back to Sign In</button>
       </div>
     </form>
   </div>
 
+  <script src="i18n.js"></script>
   <script>
+    const savedLang = localStorage.getItem('iTopLanguage') || 'ru';
+    if (window.i18n && window.i18n.currentLang !== savedLang) {
+      window.i18n.currentLang = savedLang;
+      window.i18n.applyTranslations();
+    }
+
+    function tAuth(key, vars = {}, fallback) {
+      const raw = window.i18n ? window.i18n.t(key) : key;
+      const text = raw === key && fallback ? fallback : raw;
+      return text.replace(/\{(\w+)\}/g, (_, k) => (vars[k] ?? ''));
+    }
+
     // Переключение табов
     function switchTab(tab) {
       // Скрыть все формы
@@ -516,24 +533,24 @@
       
       const button = document.getElementById('signInButton');
       button.disabled = true;
-      button.innerHTML = '<span class="loading-spinner"></span>Signing in...';
+      button.innerHTML = `<span class="loading-spinner"></span>${tAuth('auth.loading.signIn')}`;
       
       try {
         const result = await window.electronAPI.accountSignIn(email, password, rememberMe);
         
         if (result.success) {
-          showSuccess('Successfully signed in! Closing window...');
+          showSuccess(tAuth('auth.message.signInSuccess'));
           setTimeout(() => {
             window.close();
           }, 1500);
         } else {
-          showError(result.error || 'Failed to sign in');
+          showError(result.error || tAuth('auth.message.signInError'));
         }
       } catch (error) {
-        showError(error.message || 'An error occurred');
+        showError(error.message || tAuth('auth.message.genericError'));
       } finally {
         button.disabled = false;
-        button.innerHTML = 'Sign In';
+        button.innerHTML = tAuth('auth.signInButton');
       }
     }
 
@@ -547,24 +564,24 @@
       
       const button = document.getElementById('signUpButton');
       button.disabled = true;
-      button.innerHTML = '<span class="loading-spinner"></span>Creating account...';
+      button.innerHTML = `<span class="loading-spinner"></span>${tAuth('auth.loading.signUp')}`;
       
       try {
         const result = await window.electronAPI.accountSignUp(email, password, name);
         
         if (result.success) {
-          showSuccess('Account created! Please check your email to confirm.');
+          showSuccess(tAuth('auth.message.signUpSuccess'));
           setTimeout(() => {
             switchTab('signin');
           }, 2000);
         } else {
-          showError(result.error || 'Failed to create account');
+          showError(result.error || tAuth('auth.message.signUpError'));
         }
       } catch (error) {
-        showError(error.message || 'An error occurred');
+        showError(error.message || tAuth('auth.message.genericError'));
       } finally {
         button.disabled = false;
-        button.innerHTML = 'Create Account';
+        button.innerHTML = tAuth('auth.createAccount');
       }
     }
 
@@ -576,27 +593,27 @@
       
       const button = document.getElementById('resetButton');
       button.disabled = true;
-      button.innerHTML = '<span class="loading-spinner"></span>Sending...';
+      button.innerHTML = `<span class="loading-spinner"></span>${tAuth('auth.loading.reset')}`;
       
       try {
         const result = await window.electronAPI.accountResetPassword(email);
         
         if (result.success) {
-          showSuccess('Password reset email sent! Check your inbox.');
+          showSuccess(tAuth('auth.message.resetSuccess'));
         } else {
-          showError(result.error || 'Failed to send reset email');
+          showError(result.error || tAuth('auth.message.resetError'));
         }
       } catch (error) {
-        showError(error.message || 'An error occurred');
+        showError(error.message || tAuth('auth.message.genericError'));
       } finally {
         button.disabled = false;
-        button.innerHTML = 'Send Reset Link';
+        button.innerHTML = tAuth('auth.sendResetLink');
       }
     }
 
     // Google Sign In (заглушка)
     function handleGoogleSignIn() {
-      showError('Google Sign In is not configured yet');
+      showError(tAuth('auth.message.googleNotConfigured'));
     }
 
     // Открыть условия использования
@@ -610,7 +627,7 @@
       const session = await window.electronAPI.accountLoadSession();
       
       if (session.isAuthenticated) {
-        showSuccess(`Already signed in as ${session.user.email}`);
+        showSuccess(tAuth('auth.message.alreadySignedIn', { email: session.user.email }));
         setTimeout(() => {
           window.close();
         }, 2000);

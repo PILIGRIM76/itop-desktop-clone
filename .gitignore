@@ -10,6 +10,12 @@ out/
 .env
 .env.local
 .env.*.local
+desktop-app/.env
+admin-panel/.env
+telegram-bot/.env
+email-worker/.env
+!*.env.example
+!*.env.template
 
 # Logs
 logs/

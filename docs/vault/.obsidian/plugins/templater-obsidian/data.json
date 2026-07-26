@@ -1,0 +1,23 @@
+{
+  "templates_folder": "Templates",
+  "templates_pairs": [["", ""]],
+  "trigger_on_file_creation": false,
+  "auto_jump_to_cursor": true,
+  "enable_system_command_templates": false,
+  "shell_path": "",
+  "user_scripts_folder": "",
+  "enable_folder_templates": true,
+  "folder_templates": [
+    {
+      "folder": "01-Projects",
+      "template": "Templates/feature-spec"
+    },
+    {
+      "folder": "Daily",
+      "template": "Templates/daily-note"
+    }
+  ],
+  "syntax_highlighting": true,
+  "enabled_templates_hotkeys": [""],
+  "startup_templates": [""]
+}

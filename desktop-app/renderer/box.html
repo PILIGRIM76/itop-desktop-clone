@@ -146,6 +146,49 @@
       text-overflow: ellipsis;
     }
 
+    .item-actions {
+      display: flex;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      flex-shrink: 0;
+    }
+
+    .box-item:hover .item-actions {
+      opacity: 1;
+    }
+
+    .item-action-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      border: none;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+
+    .item-action-btn:hover {
+      background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(236, 72, 153, 0.15));
+      color: white;
+      box-shadow: 0 0 15px rgba(168, 85, 247, 0.3);
+      transform: scale(1.1);
+    }
+
+    .item-action-btn:active {
+      transform: scale(0.95);
+    }
+
+    .item-action-btn.delete:hover {
+      background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.15));
+      color: #ef4444;
+      box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+    }
+
     .empty-state {
       display: flex;
       flex-direction: column;
@@ -161,6 +204,12 @@
     .box-content.drag-over {
       background: rgba(139, 92, 246, 0.2);
       border: 2px dashed var(--box-color, #8b5cf6);
+      animation: dragPulse 1s ease-in-out infinite;
+    }
+
+    @keyframes dragPulse {
+      0%, 100% { border-color: var(--box-color, #8b5cf6); }
+      50% { border-color: rgba(255, 255, 255, 0.8); }
     }
 
     .drop-hint {
@@ -172,21 +221,42 @@
       text-align: center;
       color: var(--box-color, #8b5cf6);
       gap: 16px;
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 12px;
+      margin: 8px;
     }
 
     .drop-hint.visible {
       display: flex;
+      animation: dropHintFadeIn 0.2s ease;
+    }
+
+    @keyframes dropHintFadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
     }
 
     .drop-hint svg {
       width: 64px;
       height: 64px;
-      opacity: 0.6;
+      opacity: 0.8;
+      animation: dropIconBounce 1.5s ease-in-out infinite;
+    }
+
+    @keyframes dropIconBounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
     }
 
     .drop-hint p {
       font-size: 14px;
       font-weight: 600;
+    }
+
+    .drop-hint .drop-count {
+      font-size: 24px;
+      font-weight: 700;
+      color: white;
     }
 
     .resize-handle {
@@ -707,6 +777,18 @@
             </svg>
           </div>
           <span class="item-name">${file.name}</span>
+          <div class="item-actions">
+            <button class="item-action-btn" title="Переименовать" onclick="event.stopPropagation(); startRenameFile('${file.path.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}', '${file.name.replace(/'/g, "\\'")}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+            <button class="item-action-btn delete" title="Удалить из бокса" onclick="event.stopPropagation(); removeFileFromBox('${file.path.replace(/\\/g, '\\\\').replace(/'/g, "\\'")}')">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+              </svg>
+            </button>
+          </div>
         </div>
       `).join('');
 
@@ -718,6 +800,167 @@
           }
         });
       });
+    }
+
+    // Удаление файла из бокса
+    window.removeFileFromBox = async (filePath) => {
+      if (!window.electronAPI || !window.electronAPI.removeItemFromBox) return;
+
+      // Показываем подтверждение
+      const fileName = filePath.split('\\').pop() || filePath.split('/').pop();
+      if (!confirm(`Удалить "${fileName}" из бокса?`)) return;
+
+      try {
+        const result = await window.electronAPI.removeItemFromBox(boxState.id, filePath);
+
+        if (result && result.success) {
+          // Показываем уведомление об успехе
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 42, 61, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          `;
+          notification.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>"${fileName}" удалён из бокса</span>
+          `;
+          document.body.appendChild(notification);
+
+          // Обновляем содержимое бокса
+          refreshBoxContent();
+
+          // Удаляем уведомление через 2 секунды
+          setTimeout(() => notification.remove(), 2000);
+        }
+      } catch (error) {
+        console.error('Error removing file:', error);
+      }
+    };
+
+    // Переименование файла
+    window.startRenameFile = (filePath, currentName) => {
+      // Находим элемент файла
+      const item = document.querySelector(`.box-item[data-path="${filePath}"]`);
+      if (!item) return;
+
+      const nameSpan = item.querySelector('.item-name');
+      const actionsDiv = item.querySelector('.item-actions');
+
+      // Сохраняем оригинальное имя
+      const originalName = currentName;
+      const extension = currentName.includes('.') ? '.' + currentName.split('.').pop() : '';
+      const nameWithoutExt = currentName.includes('.') ? currentName.slice(0, -extension.length) : currentName;
+
+      // Заменяем текст на input
+      nameSpan.innerHTML = `
+        <input type="text" class="rename-input" value="${nameWithoutExt}" 
+               style="width: 100%; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 2px 6px; color: white; font-size: 13px; outline: none;"
+               onclick="event.stopPropagation()">
+      `;
+
+      // Скрываем кнопки действий
+      if (actionsDiv) actionsDiv.style.display = 'none';
+
+      const input = nameSpan.querySelector('rename-input');
+      if (!input) return;
+
+      input.focus();
+      input.select();
+
+      // Обработка Enter
+      input.addEventListener('keydown', async (e) => {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          const newName = input.value.trim() + extension;
+          if (newName && newName !== originalName) {
+            await completeRename(filePath, newName);
+          } else {
+            cancelRename(nameSpan, originalName, actionsDiv);
+          }
+        } else if (e.key === 'Escape') {
+          cancelRename(nameSpan, originalName, actionsDiv);
+        }
+      });
+
+      // Потеря фокуса
+      input.addEventListener('blur', async () => {
+        const newName = input.value.trim() + extension;
+        if (newName && newName !== originalName) {
+          await completeRename(filePath, newName);
+        } else {
+          cancelRename(nameSpan, originalName, actionsDiv);
+        }
+      });
+    };
+
+    async function completeRename(filePath, newName) {
+      if (!window.electronAPI || !window.electronAPI.renameFile) return;
+
+      try {
+        const result = await window.electronAPI.renameFile(filePath, newName);
+
+        if (result && result.success) {
+          // Показываем уведомление
+          const notification = document.createElement('div');
+          notification.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(37, 42, 61, 0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: white;
+            font-size: 14px;
+            z-index: 100000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+          `;
+          notification.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+            <span>Файл переименован в "${newName}"</span>
+          `;
+          document.body.appendChild(notification);
+
+          // Обновляем содержимое бокса
+          refreshBoxContent();
+
+          setTimeout(() => notification.remove(), 2000);
+        } else {
+          alert('Ошибка: ' + (result?.error || 'Не удалось переименовать'));
+          refreshBoxContent();
+        }
+      } catch (error) {
+        console.error('Error renaming file:', error);
+        refreshBoxContent();
+      }
+    }
+
+    function cancelRename(nameSpan, originalName, actionsDiv) {
+      nameSpan.textContent = originalName;
+      if (actionsDiv) actionsDiv.style.display = '';
     }
 
     async function loadBoxItems() {
@@ -1134,6 +1377,8 @@
     }
 
     // Highlight drop area when item is dragged over it
+    let dragCounter = 0;
+
     ['dragenter', 'dragover'].forEach(eventName => {
       boxContent.addEventListener(eventName, highlight, false);
     });
@@ -1143,13 +1388,44 @@
     });
 
     function highlight(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter++;
       boxContent.classList.add('drag-over');
       dropHint.classList.add('visible');
+
+      // Показываем количество файлов если доступно
+      const dt = e.dataTransfer;
+      if (dt && dt.types) {
+        const fileCount = dt.files ? dt.files.length : 0;
+        if (fileCount > 0) {
+          dropHint.innerHTML = `
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
+            <div class="drop-count">${fileCount}</div>
+            <p>${fileCount === 1 ? 'Перетащите файл' : 'Перетащите файлы'}</p>
+          `;
+        }
+      }
     }
 
     function unhighlight(e) {
-      boxContent.classList.remove('drag-over');
-      dropHint.classList.remove('visible');
+      e.preventDefault();
+      e.stopPropagation();
+      dragCounter--;
+      if (dragCounter <= 0) {
+        dragCounter = 0;
+        boxContent.classList.remove('drag-over');
+        dropHint.classList.remove('visible');
+        // Восстанавливаем оригинальный текст
+        dropHint.innerHTML = `
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+          </svg>
+          <p>${tBox('boxWindow.dropFilesToAdd')}</p>
+        `;
+      }
     }
 
     // Handle dropped files
@@ -1225,6 +1501,97 @@
         }
       }
     }
+
+    // ========================================
+    // Window-level drop handler for Windows Explorer
+    // ========================================
+
+    // Обработчик drop на уровне окна для поддержки перетаскивания из Windows Explorer
+    document.addEventListener('drop', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const dt = e.dataTransfer;
+      if (!dt || !dt.files || dt.files.length === 0) return;
+
+      // Проверяем что файлы были перетащены из Windows Explorer
+      const files = Array.from(dt.files);
+      const paths = files.map(f => f.path).filter(p => p);
+
+      if (paths.length === 0) return;
+
+      // Показываем индикатор загрузки
+      const notification = document.createElement('div');
+      notification.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(37, 42, 61, 0.95);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        padding: 12px 20px;
+        color: white;
+        font-size: 14px;
+        z-index: 100000;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        animation: slideUp 0.2s ease;
+      `;
+      notification.innerHTML = `
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+        </svg>
+        <span>Добавление ${paths.length} файлов...</span>
+      `;
+      document.body.appendChild(notification);
+
+      try {
+        // Добавляем файлы в бокс
+        if (window.electronAPI && window.electronAPI.addItemsToBox) {
+          const result = await window.electronAPI.addItemsToBox(boxState.id, paths);
+
+          if (result && result.success) {
+            // Показываем успех
+            notification.innerHTML = `
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              <span>Добавлено ${result.added || paths.length} файлов</span>
+            `;
+
+            // Обновляем содержимое бокса
+            setTimeout(() => {
+              refreshBoxContent();
+            }, 100);
+          } else {
+            throw new Error(result?.error || 'Failed to add files');
+          }
+        }
+      } catch (error) {
+        console.error('Error adding files:', error);
+        notification.innerHTML = `
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+          <span>Ошибка добавления файлов</span>
+        `;
+      }
+
+      // Удаляем уведомление через 3 секунды
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    });
+
+    // Предотвращаем стандартное поведение при перетаскивании
+    document.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+    });
   </script>
 </body>
 </html>
