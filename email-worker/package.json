@@ -16,7 +16,7 @@
   "author": "iTop Clone",
   "license": "MIT",
   "dependencies": {
-    "@supabase/supabase-js": "^2.39.0",
+    "@supabase/supabase-js": "^2.117.1",
     "nodemailer": "^6.9.7",
     "dotenv": "^16.3.1"
   }
